@@ -113,11 +113,47 @@ def run_preview(
     config: AppConfig | None = None,
     scale: float = 2.0,
     fps_override: float | None = None,
+    detect_roster: bool = True,
+    my_team: str | None = None,
+    roster_delay: int = 5,
 ) -> None:
-    """Run an interactive preview loop. `scale` enlarges the window for readability."""
+    """Run an interactive preview loop. `scale` enlarges the window for readability.
+
+    Roster:
+        When ``detect_roster`` is True (default), capture the top bar at startup,
+        detect the 10 heroes, and restrict template matching to that set
+        (10-15x faster than matching all 127 heroes).
+    """
     cfg = config or load_app_config()
     cal = load_minimap_calibration()
     analyzer = MinimapAnalyzer(cfg.minimap)
+
+    if detect_roster:
+        from .detect_roster import detect_roster_live
+
+        print(f"[preview] roster detection: showing top bar in {roster_delay}s...")
+        try:
+            roster = detect_roster_live(delay=roster_delay, my_team=my_team)
+        except Exception as e:
+            print(f"[preview] roster detection failed: {e}")
+            print("[preview] falling back to full 127-hero matching.")
+        else:
+            print("[preview] roster detected:")
+            for i, h in enumerate(roster.radiant):
+                print(f"  RADIANT #{i+1}  {h}")
+            for i, h in enumerate(roster.dire):
+                print(f"  DIRE    #{i+1}  {h}")
+            print(f"[preview] my_team = {roster.my_team or '<unset, will use HSV>'}")
+            if my_team:
+                # Side known: pre-assign team labels, skip HSV ring sampling.
+                analyzer.set_roster(allies=roster.allies(), enemies=roster.enemies())
+            else:
+                # Side unknown: still benefit from 10-template restriction;
+                # team will be inferred per detection from the colored ring.
+                # Pass everyone as "enemies" with no team mapping; the
+                # analyzer's HSV fallback runs because _team_by_hero is empty.
+                analyzer.set_roster(allies=[], enemies=roster.heroes)
+                analyzer._team_by_hero = {}
 
     effective_fps = fps_override if fps_override is not None else cfg.capture.fps
     interval = 1.0 / max(effective_fps, 0.1)

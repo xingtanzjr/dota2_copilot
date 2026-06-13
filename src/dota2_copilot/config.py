@@ -26,6 +26,7 @@ DEFAULT_APP_CONFIG = REPO_ROOT / "config" / "app.yaml"
 DEFAULT_MINIMAP_CONFIG = REPO_ROOT / "config" / "minimap.json"
 DEFAULT_LANDMARKS_TEMPLATE = REPO_ROOT / "assets" / "map_landmarks.yaml"
 DEFAULT_LANDMARKS_OVERRIDE = REPO_ROOT / "config" / "map_landmarks.json"
+DEFAULT_ROSTER_PATH = REPO_ROOT / "config" / "roster.json"
 
 
 # ---------------------------------------------------------------------------
@@ -88,6 +89,8 @@ class TemplateDetectConfig(BaseModel):
     team_s_min: int = 70
     team_v_min: int = 70
     team_min_pixels: int = 6                # below this in BOTH colors -> unknown
+    # NOTE: roster is set at RUNTIME by the roster-detection step (see
+    # tools/detect_roster.py), not from config. It's an in-memory optimization.
 
 
 class MinimapDetectConfig(BaseModel):
@@ -112,6 +115,36 @@ def load_app_config(path: Path | None = None) -> AppConfig:
     with path.open("r", encoding="utf-8") as f:
         raw = yaml.safe_load(f)
     return AppConfig.model_validate(raw)
+
+
+def load_roster(path: Path | None = None, silent: bool = False) -> list[str] | None:
+    """Optional helper: read a previously saved roster.json (debug use only).
+
+    The normal runtime flow is to detect the roster at startup and keep it in
+    memory; this helper is only useful for offline experiments.
+    """
+    path = path or DEFAULT_ROSTER_PATH
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        heroes = data.get("heroes") or []
+        return [str(h) for h in heroes] if heroes else None
+    except (json.JSONDecodeError, OSError) as e:
+        if not silent:
+            print(f"[config] failed to read {path}: {e}")
+        return None
+
+
+def save_roster(heroes: list[str], path: Path | None = None) -> Path:
+    """Optional helper: persist a roster for debugging (not auto-loaded)."""
+    path = path or DEFAULT_ROSTER_PATH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps({"heroes": list(heroes)}, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+    return path
 
 
 # ---------------------------------------------------------------------------

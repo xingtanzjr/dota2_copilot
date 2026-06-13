@@ -44,6 +44,8 @@ P2 template matching will recover identity and separate stacks.
 
 from __future__ import annotations
 
+import os
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import cv2
@@ -128,16 +130,26 @@ def _detect_icons(
 # ---------------------------------------------------------------------------
 
 
-def _load_templates(cfg: TemplateDetectConfig) -> list[tuple[str, np.ndarray, np.ndarray | None]]:
-    """Load all hero portrait templates at the configured size.
+def _load_templates(
+    cfg: TemplateDetectConfig,
+    roster: set[str] | None = None,
+) -> list[tuple[str, np.ndarray, np.ndarray | None]]:
+    """Load hero portrait templates at the configured size.
+
+    If ``roster`` is given, only templates for those hero short-names are
+    loaded (huge speed win once you know who's in the game).
 
     Returns ``[(short_name, bgr, alpha_or_None), ...]``.
     """
     tmpl_dir = Path(cfg.template_dir)
     if not tmpl_dir.is_absolute():
         tmpl_dir = REPO_ROOT / tmpl_dir
+
     out: list[tuple[str, np.ndarray, np.ndarray | None]] = []
     for p in sorted(tmpl_dir.glob(f"*_{cfg.template_size}.png")):
+        short = p.stem.rsplit("_", 1)[0]
+        if roster is not None and short not in roster:
+            continue
         img = cv2.imread(str(p), cv2.IMREAD_UNCHANGED)
         if img is None:
             continue
@@ -150,7 +162,6 @@ def _load_templates(cfg: TemplateDetectConfig) -> list[tuple[str, np.ndarray, np
         else:
             bgr = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
             alpha = None
-        short = p.stem.rsplit("_", 1)[0]
         out.append((short, bgr, alpha))
     return out
 
@@ -209,6 +220,44 @@ def _nms_by_center(detections: list[dict], dist: int) -> list[dict]:
     return kept
 
 
+# OpenCV's matchTemplate releases the GIL, so a thread pool gives near-linear
+# speedup. Keep a module-level pool so we don't recreate it every frame.
+_TEMPLATE_THREADS = max(1, min(8, (os.cpu_count() or 4)))
+_TEMPLATE_POOL: ThreadPoolExecutor | None = None
+
+
+def _get_pool() -> ThreadPoolExecutor:
+    global _TEMPLATE_POOL
+    if _TEMPLATE_POOL is None:
+        _TEMPLATE_POOL = ThreadPoolExecutor(max_workers=_TEMPLATE_THREADS)
+    return _TEMPLATE_POOL
+
+
+def _match_one(
+    minimap_bgr: np.ndarray,
+    short: str,
+    bgr: np.ndarray,
+    alpha: np.ndarray | None,
+    threshold: float,
+    size: int,
+) -> dict | None:
+    if alpha is not None:
+        res = cv2.matchTemplate(minimap_bgr, bgr, cv2.TM_CCORR_NORMED, mask=alpha)
+    else:
+        res = cv2.matchTemplate(minimap_bgr, bgr, cv2.TM_CCOEFF_NORMED)
+    _, score, _, loc = cv2.minMaxLoc(res)
+    if score < threshold:
+        return None
+    x, y = int(loc[0]), int(loc[1])
+    return {
+        "hero": short,
+        "score": float(score),
+        "x": x, "y": y,
+        "cx": x + size // 2, "cy": y + size // 2,
+        "bbox": (x, y, size, size),
+    }
+
+
 def _detect_templates(
     minimap_bgr: np.ndarray,
     templates: list[tuple[str, np.ndarray, np.ndarray | None]],
@@ -216,28 +265,19 @@ def _detect_templates(
 ) -> list[dict]:
     """Run all hero templates against the minimap; return surviving detections.
 
+    Parallelized across templates with a thread pool (OpenCV releases the GIL).
     Each detection dict contains: hero, score, x, y, cx, cy, bbox (incl. size).
     """
     if not templates:
         return []
     size = cfg.template_size
-    raw: list[dict] = []
-    for short, bgr, alpha in templates:
-        if alpha is not None:
-            res = cv2.matchTemplate(minimap_bgr, bgr, cv2.TM_CCORR_NORMED, mask=alpha)
-        else:
-            res = cv2.matchTemplate(minimap_bgr, bgr, cv2.TM_CCOEFF_NORMED)
-        _, score, _, loc = cv2.minMaxLoc(res)
-        if score < cfg.score_threshold:
-            continue
-        x, y = int(loc[0]), int(loc[1])
-        raw.append({
-            "hero": short,
-            "score": float(score),
-            "x": x, "y": y,
-            "cx": x + size // 2, "cy": y + size // 2,
-            "bbox": (x, y, size, size),
-        })
+    thresh = cfg.score_threshold
+    pool = _get_pool()
+    futures = [
+        pool.submit(_match_one, minimap_bgr, short, bgr, alpha, thresh, size)
+        for short, bgr, alpha in templates
+    ]
+    raw: list[dict] = [f for f in (fut.result() for fut in futures) if f is not None]
     return _nms_by_center(raw, cfg.nms_distance)
 
 
@@ -247,11 +287,47 @@ def _detect_templates(
 
 
 class MinimapAnalyzer:
-    """Stateless analyzer; instantiate once with config and reuse."""
+    """Stateless analyzer; instantiate once with config and reuse.
+
+    Match-time roster filtering: call ``set_roster(heroes, allies, enemies)``
+    once at the start of a match to restrict template matching to the 10
+    actually-picked heroes and to pre-decide team labels (no HSV fallback
+    needed when the hero's side is known up-front).
+    """
 
     def __init__(self, cfg: MinimapDetectConfig) -> None:
         self.cfg = cfg
         self._templates: list[tuple[str, np.ndarray, np.ndarray | None]] | None = None
+        self._roster: set[str] | None = None
+        # hero short -> Team.ALLY | Team.ENEMY (skip HSV ring sampling when known)
+        self._team_by_hero: dict[str, Team] = {}
+
+    # ------------------------------------------------------------------
+    # Runtime roster injection
+    # ------------------------------------------------------------------
+
+    def set_roster(
+        self,
+        allies: list[str] | None = None,
+        enemies: list[str] | None = None,
+    ) -> None:
+        """Restrict templates to the (allies + enemies) heroes and store sides.
+
+        Pass ``None`` for both to clear and fall back to the full 127-hero pool.
+        """
+        if not allies and not enemies:
+            self._roster = None
+            self._team_by_hero = {}
+        else:
+            allies = allies or []
+            enemies = enemies or []
+            self._roster = set(allies) | set(enemies)
+            self._team_by_hero = {
+                **{h: Team.ALLY for h in allies},
+                **{h: Team.ENEMY for h in enemies},
+            }
+        # Force template reload on next detect() call.
+        self._templates = None
 
     # ------------------------------------------------------------------
     # Core API
@@ -328,7 +404,7 @@ class MinimapAnalyzer:
 
     def _ensure_templates_loaded(self) -> list[tuple[str, np.ndarray, np.ndarray | None]]:
         if self._templates is None:
-            self._templates = _load_templates(self.cfg.template)
+            self._templates = _load_templates(self.cfg.template, roster=self._roster)
         return self._templates
 
     def _detect_via_templates(self, minimap_bgr: np.ndarray) -> tuple[list[HeroBlob], list[HeroBlob]]:
@@ -340,7 +416,11 @@ class MinimapAnalyzer:
         allies: list[HeroBlob] = []
         for d in dets:
             bbox = d["bbox"]
-            team = _detect_team_around(minimap_bgr, bbox, self.cfg.template)
+            # If we know this hero's side from roster, trust it; otherwise
+            # fall back to HSV ring sampling on the colored arrow.
+            team = self._team_by_hero.get(d["hero"])
+            if team is None:
+                team = _detect_team_around(minimap_bgr, bbox, self.cfg.template)
             blob = HeroBlob(
                 team=team,
                 pos=Point(x=d["cx"] / w, y=d["cy"] / h),

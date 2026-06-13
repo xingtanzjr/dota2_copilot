@@ -80,16 +80,44 @@ def preview(
         "--fps",
         help="Override capture FPS for preview. Higher = smoother but more CPU.",
     ),
+    detect_roster: bool = typer.Option(
+        True,
+        "--detect-roster/--no-detect-roster",
+        help="Auto-detect the 10 heroes from the top bar at startup (10-15x speedup).",
+    ),
+    my_team: Optional[str] = typer.Option(
+        None, "--my-team", "-t",
+        help="Which side you're on: 'radiant' or 'dire'. Lets the analyzer skip per-frame team detection.",
+    ),
+    roster_delay: int = typer.Option(
+        5, "--roster-delay",
+        help="Seconds to wait before grabbing the top bar for roster detection.",
+    ),
     config: Optional[Path] = typer.Option(
         None, "--config", "-c", help="Path to app.yaml (defaults to repo config/app.yaml)."
     ),
 ) -> None:
-    """Live preview: continuously detect heroes on the minimap."""
+    """Live preview: continuously detect heroes on the minimap.
+
+    At startup, by default, the top bar is captured and the 10 heroes are
+    identified. This restricts subsequent template matching to those heroes
+    only -- typically 10-15x faster than matching all 127. Pass --no-detect-roster
+    to skip (useful during a replay or if the top bar is obscured).
+    """
     from .config import load_app_config
     from .tools.debug_preview import run_preview
 
+    if my_team is not None and my_team not in ("radiant", "dire"):
+        raise typer.BadParameter("--my-team must be 'radiant' or 'dire'")
     cfg = load_app_config(config) if config else None
-    run_preview(config=cfg, scale=scale, fps_override=fps)
+    run_preview(
+        config=cfg,
+        scale=scale,
+        fps_override=fps,
+        detect_roster=detect_roster,
+        my_team=my_team,
+        roster_delay=roster_delay,
+    )
 
 
 @app.command()
@@ -106,16 +134,43 @@ def dump(
         None, "--config", "-c", help="Path to app.yaml."
     ),
 ) -> None:
-    """Grab ONE frame, run detection, write a full debug bundle, then exit.
-
-    Use this instead of `preview` when you just want to dump a snapshot for
-    offline analysis (no OpenCV window focus needed).
-    """
+    """Grab ONE frame, run detection, write a full debug bundle, then exit."""
     from .config import load_app_config
     from .tools.debug_preview import run_dump
 
     cfg = load_app_config(config) if config else None
     run_dump(config=cfg, delay=delay, from_image=from_image)
+
+
+@app.command()
+def roster(
+    delay: int = typer.Option(
+        5, "--delay", "-d",
+        help="Seconds to wait before grabbing the screen.",
+    ),
+    from_image: Optional[Path] = typer.Option(
+        None, "--from-image", "-i",
+        help="Read from a full screenshot instead of live capture.",
+    ),
+    my_team: Optional[str] = typer.Option(
+        None, "--my-team", "-t",
+        help="Which side you're on: 'radiant' or 'dire'. Stored in roster.json.",
+    ),
+    out: Optional[Path] = typer.Option(
+        None, "--out", "-o", help="Override output path for roster.json."
+    ),
+) -> None:
+    """Detect the 10 heroes from the top bar and save them to config/roster.json.
+
+    Once a roster is saved, the minimap analyzer restricts template matching
+    to those 10 heroes only -- a 10-15x speedup vs. matching all 127.
+    Run this once at the start of each match (after all heroes are picked).
+    """
+    from .tools.detect_roster import run_roster_detection
+
+    if my_team is not None and my_team not in ("radiant", "dire"):
+        raise typer.BadParameter("--my-team must be 'radiant' or 'dire'")
+    run_roster_detection(delay=delay, from_image=from_image, out_path=out, my_team=my_team)
 
 
 @app.command()
