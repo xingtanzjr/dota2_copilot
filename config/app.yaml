@@ -30,12 +30,13 @@ notifier:
 
 minimap:
   # ------------------------------------------------------------------
-  # Display mode of heroes on the minimap (configurable in Dota 2 settings).
-  #   icons  : hero portrait icons with team-colored border  (P1 default)
-  #   names  : Chinese hero names colored by team             (P2, TODO)
-  #   arrows : per-hero colored arrows, ally/enemy shape diff (P2, TODO)
+  # Display mode of heroes on the minimap.
+  #   icons_template : portrait template matching (P1 DEFAULT, recommended)
+  #   icons          : HSV color blob on team-colored border (fallback)
+  #   names          : Chinese hero names colored by team    (P2, TODO)
+  #   arrows         : per-hero colored arrows                (P2, TODO)
   # ------------------------------------------------------------------
-  display_mode: icons
+  display_mode: icons_template
 
   # HSV color ranges (OpenCV convention: H ∈ [0,180], S/V ∈ [0,255]).
   # Used for both "icons" and "names" modes; "arrows" mode is unique per hero
@@ -80,3 +81,21 @@ minimap:
     # raw (pre-close) mask only contains the border ring → low fill.
     # A tower/barracks is solid red/green → high fill.
     building_raw_fill_max: 0.55
+
+  # ------------------------------------------------------------------
+  # Parameters for display_mode == "icons_template".
+  # Each hero's portrait (assets/minimap/<short>_<size>.png) is matched
+  # against the minimap. Team is inferred from the colored arrow/ring just
+  # outside the matched bbox.
+  # ------------------------------------------------------------------
+  template:
+    template_dir: assets/minimap
+    template_size: 32              # asset suffix; 28 / 30 / 32 available
+    score_threshold: 0.55          # min matchTemplate response to keep
+    nms_distance: 16               # px between centers; closer dets are merged
+    team_ring_thickness: 7         # px ring outside icon used for team color
+    team_red_h_ranges: [[0, 12], [165, 180]]
+    team_green_h_ranges: [[38, 90]]
+    team_s_min: 70
+    team_v_min: 70
+    team_min_pixels: 6             # below this in BOTH colors → team=unknown

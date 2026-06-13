@@ -72,11 +72,30 @@ class IconsDetectConfig(BaseModel):
     building_raw_fill_max: float = 0.55
 
 
+class TemplateDetectConfig(BaseModel):
+    """Parameters for template-matching hero detection.
+
+    Templates are loaded from ``assets/minimap/<short>_<size>.png``.
+    """
+
+    template_dir: str = "assets/minimap"
+    template_size: int = 32                 # which size suffix to use (28/30/32)
+    score_threshold: float = 0.55           # min matchTemplate response to keep
+    nms_distance: int = 16                  # px between centers for same-hero NMS
+    team_ring_thickness: int = 7            # px ring outside bbox for team color
+    team_red_h_ranges: list[tuple[int, int]] = Field(default_factory=lambda: [(0, 12), (165, 180)])
+    team_green_h_ranges: list[tuple[int, int]] = Field(default_factory=lambda: [(38, 90)])
+    team_s_min: int = 70
+    team_v_min: int = 70
+    team_min_pixels: int = 6                # below this in BOTH colors -> unknown
+
+
 class MinimapDetectConfig(BaseModel):
-    display_mode: Literal["icons", "names", "arrows"] = "icons"
+    display_mode: Literal["icons", "icons_template", "names", "arrows"] = "icons_template"
     enemy_red: ColorRangeConfig
     ally_green: ColorRangeConfig
     icons: IconsDetectConfig = Field(default_factory=IconsDetectConfig)
+    template: TemplateDetectConfig = Field(default_factory=TemplateDetectConfig)
 
 
 class AppConfig(BaseModel):

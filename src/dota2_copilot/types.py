@@ -53,17 +53,20 @@ class ScreenRect:
 
 @dataclass(slots=True)
 class HeroBlob:
-    """A detected hero portrait icon on the minimap.
+    """A detected hero icon on the minimap.
 
-    Detection is based on the team-colored border around each hero portrait,
-    so `pos` / `pixel_pos` are the center of the icon's bounding box.
+    For HSV mode, the detection is the team-colored border around the icon.
+    For template-matching mode, the detection is the matched hero portrait
+    and `hero_id` holds the short name (e.g. ``"lina"``).
     """
 
     team: Team
     pos: Point                          # normalized icon center within minimap
     pixel_pos: tuple[int, int]          # icon center, pixel coords within the crop
     bbox: tuple[int, int, int, int]     # (x, y, w, h) in pixel coords within the crop
-    area: int                           # contour area (filled), pixels
+    area: int                           # contour area (filled) / template area, pixels
+    hero_id: str | None = None          # template-match identifier (short name)
+    score: float = 0.0                  # template-match confidence (0..1)
 
 
 @dataclass(slots=True)

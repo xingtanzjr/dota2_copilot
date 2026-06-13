@@ -44,10 +44,12 @@ P2 template matching will recover identity and separate stacks.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import cv2
 import numpy as np
 
-from ..config import IconsDetectConfig, MinimapDetectConfig
+from ..config import IconsDetectConfig, MinimapDetectConfig, REPO_ROOT, TemplateDetectConfig
 from ..types import Frame, HeroBlob, Point, Team
 
 
@@ -122,6 +124,124 @@ def _detect_icons(
 
 
 # ---------------------------------------------------------------------------
+# Template-matching detection (display_mode == "icons_template")
+# ---------------------------------------------------------------------------
+
+
+def _load_templates(cfg: TemplateDetectConfig) -> list[tuple[str, np.ndarray, np.ndarray | None]]:
+    """Load all hero portrait templates at the configured size.
+
+    Returns ``[(short_name, bgr, alpha_or_None), ...]``.
+    """
+    tmpl_dir = Path(cfg.template_dir)
+    if not tmpl_dir.is_absolute():
+        tmpl_dir = REPO_ROOT / tmpl_dir
+    out: list[tuple[str, np.ndarray, np.ndarray | None]] = []
+    for p in sorted(tmpl_dir.glob(f"*_{cfg.template_size}.png")):
+        img = cv2.imread(str(p), cv2.IMREAD_UNCHANGED)
+        if img is None:
+            continue
+        if img.ndim == 3 and img.shape[2] == 4:
+            bgr = img[:, :, :3]
+            alpha = img[:, :, 3]
+        elif img.ndim == 3:
+            bgr = img
+            alpha = None
+        else:
+            bgr = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+            alpha = None
+        short = p.stem.rsplit("_", 1)[0]
+        out.append((short, bgr, alpha))
+    return out
+
+
+def _detect_team_around(
+    minimap_bgr: np.ndarray,
+    bbox: tuple[int, int, int, int],
+    cfg: TemplateDetectConfig,
+) -> Team:
+    """Sample a ring just outside the bbox; majority red → enemy, green → ally."""
+    x, y, w, h = bbox
+    H, W = minimap_bgr.shape[:2]
+    t = cfg.team_ring_thickness
+    x0, y0 = max(x - t, 0), max(y - t, 0)
+    x1, y1 = min(x + w + t, W), min(y + h + t, H)
+    outer = minimap_bgr[y0:y1, x0:x1].copy()
+    if outer.size == 0:
+        return Team.UNKNOWN
+
+    # Hollow out the icon interior — only the ring should contribute.
+    cv2.rectangle(outer, (x - x0, y - y0), (x - x0 + w, y - y0 + h), (0, 0, 0), -1)
+    hsv = cv2.cvtColor(outer, cv2.COLOR_BGR2HSV)
+
+    red_mask = np.zeros(hsv.shape[:2], dtype=np.uint8)
+    for lo, hi in cfg.team_red_h_ranges:
+        red_mask |= cv2.inRange(
+            hsv,
+            np.array([lo, cfg.team_s_min, cfg.team_v_min], dtype=np.uint8),
+            np.array([hi, 255, 255], dtype=np.uint8),
+        )
+    green_mask = np.zeros(hsv.shape[:2], dtype=np.uint8)
+    for lo, hi in cfg.team_green_h_ranges:
+        green_mask |= cv2.inRange(
+            hsv,
+            np.array([lo, cfg.team_s_min, cfg.team_v_min], dtype=np.uint8),
+            np.array([hi, 255, 255], dtype=np.uint8),
+        )
+
+    red = int(np.count_nonzero(red_mask))
+    green = int(np.count_nonzero(green_mask))
+    if red < cfg.team_min_pixels and green < cfg.team_min_pixels:
+        return Team.UNKNOWN
+    return Team.ENEMY if red >= green else Team.ALLY
+
+
+def _nms_by_center(detections: list[dict], dist: int) -> list[dict]:
+    """Greedy non-max suppression by Euclidean distance between icon centers."""
+    sorted_d = sorted(detections, key=lambda d: -d["score"])
+    kept: list[dict] = []
+    d2 = dist * dist
+    for d in sorted_d:
+        cx, cy = d["cx"], d["cy"]
+        if any((cx - k["cx"]) ** 2 + (cy - k["cy"]) ** 2 < d2 for k in kept):
+            continue
+        kept.append(d)
+    return kept
+
+
+def _detect_templates(
+    minimap_bgr: np.ndarray,
+    templates: list[tuple[str, np.ndarray, np.ndarray | None]],
+    cfg: TemplateDetectConfig,
+) -> list[dict]:
+    """Run all hero templates against the minimap; return surviving detections.
+
+    Each detection dict contains: hero, score, x, y, cx, cy, bbox (incl. size).
+    """
+    if not templates:
+        return []
+    size = cfg.template_size
+    raw: list[dict] = []
+    for short, bgr, alpha in templates:
+        if alpha is not None:
+            res = cv2.matchTemplate(minimap_bgr, bgr, cv2.TM_CCORR_NORMED, mask=alpha)
+        else:
+            res = cv2.matchTemplate(minimap_bgr, bgr, cv2.TM_CCOEFF_NORMED)
+        _, score, _, loc = cv2.minMaxLoc(res)
+        if score < cfg.score_threshold:
+            continue
+        x, y = int(loc[0]), int(loc[1])
+        raw.append({
+            "hero": short,
+            "score": float(score),
+            "x": x, "y": y,
+            "cx": x + size // 2, "cy": y + size // 2,
+            "bbox": (x, y, size, size),
+        })
+    return _nms_by_center(raw, cfg.nms_distance)
+
+
+# ---------------------------------------------------------------------------
 # Analyzer
 # ---------------------------------------------------------------------------
 
@@ -131,6 +251,7 @@ class MinimapAnalyzer:
 
     def __init__(self, cfg: MinimapDetectConfig) -> None:
         self.cfg = cfg
+        self._templates: list[tuple[str, np.ndarray, np.ndarray | None]] | None = None
 
     # ------------------------------------------------------------------
     # Core API
@@ -139,23 +260,35 @@ class MinimapAnalyzer:
     def detect(self, minimap_bgr: np.ndarray) -> tuple[list[HeroBlob], list[HeroBlob]]:
         """Run detection -> ``(enemies, allies)``.
 
-        Raises ``NotImplementedError`` for display modes other than ``icons``
-        until those detectors are built.
+        Dispatches by ``display_mode``. Heroes whose team can't be determined
+        are reported under whichever bucket the rules engine handles — we
+        currently assign them to ``enemies`` so gank warnings stay safe.
         """
         if minimap_bgr.ndim != 3 or minimap_bgr.shape[2] != 3:
             raise ValueError(f"Expected BGR image, got shape {minimap_bgr.shape}")
 
-        if self.cfg.display_mode == "names":
+        mode = self.cfg.display_mode
+        if mode == "icons_template":
+            return self._detect_via_templates(minimap_bgr)
+        if mode == "icons":
+            return self._detect_via_hsv(minimap_bgr)
+        if mode == "names":
             raise NotImplementedError(
                 "Display mode 'names' requires OCR and is scheduled for P2. "
                 "Switch Dota 2 minimap setting to 'icons' for now."
             )
-        if self.cfg.display_mode == "arrows":
+        if mode == "arrows":
             raise NotImplementedError(
                 "Display mode 'arrows' requires per-hero color/shape templates "
                 "and is scheduled for P2. Switch to 'icons' for now."
             )
+        raise ValueError(f"Unknown display_mode: {mode!r}")
 
+    # ------------------------------------------------------------------
+    # display_mode == "icons"  (HSV color blob detection)
+    # ------------------------------------------------------------------
+
+    def _detect_via_hsv(self, minimap_bgr: np.ndarray) -> tuple[list[HeroBlob], list[HeroBlob]]:
         h, w = minimap_bgr.shape[:2]
         hsv = cv2.cvtColor(minimap_bgr, cv2.COLOR_BGR2HSV)
 
@@ -188,6 +321,46 @@ class MinimapAnalyzer:
             ]
 
         return to_blobs(enemies_raw, Team.ENEMY), to_blobs(allies_raw, Team.ALLY)
+
+    # ------------------------------------------------------------------
+    # display_mode == "icons_template"  (template matching against assets/)
+    # ------------------------------------------------------------------
+
+    def _ensure_templates_loaded(self) -> list[tuple[str, np.ndarray, np.ndarray | None]]:
+        if self._templates is None:
+            self._templates = _load_templates(self.cfg.template)
+        return self._templates
+
+    def _detect_via_templates(self, minimap_bgr: np.ndarray) -> tuple[list[HeroBlob], list[HeroBlob]]:
+        h, w = minimap_bgr.shape[:2]
+        templates = self._ensure_templates_loaded()
+        dets = _detect_templates(minimap_bgr, templates, self.cfg.template)
+
+        enemies: list[HeroBlob] = []
+        allies: list[HeroBlob] = []
+        for d in dets:
+            bbox = d["bbox"]
+            team = _detect_team_around(minimap_bgr, bbox, self.cfg.template)
+            blob = HeroBlob(
+                team=team,
+                pos=Point(x=d["cx"] / w, y=d["cy"] / h),
+                pixel_pos=(d["cx"], d["cy"]),
+                bbox=bbox,
+                area=bbox[2] * bbox[3],
+                hero_id=d["hero"],
+                score=d["score"],
+            )
+            # Unknown-team detections are bucketed with enemies so gank rules
+            # err on the side of caution (false positive < missed danger).
+            if team == Team.ALLY:
+                allies.append(blob)
+            else:
+                enemies.append(blob)
+        return enemies, allies
+
+    # ------------------------------------------------------------------
+    # Frame wrapper
+    # ------------------------------------------------------------------
 
     def analyze(self, minimap_bgr: np.ndarray, timestamp: float) -> Frame:
         """Convenience: detect + wrap into a ``Frame``."""

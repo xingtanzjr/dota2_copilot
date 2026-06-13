@@ -48,9 +48,12 @@ def _annotate(minimap_bgr: np.ndarray, frame: Frame) -> np.ndarray:
         color = _TEAM_COLOR[blob.team]
         cv2.rectangle(img, (x, y), (x + bw, y + bh), color, 2)
         cv2.circle(img, blob.pixel_pos, 4, color, 2)
+        label = blob.hero_id[:8] if blob.hero_id else _TEAM_LABEL[blob.team]
+        if blob.hero_id and blob.score:
+            label = f"{blob.hero_id[:8]} {blob.score:.2f}"
         cv2.putText(
-            img, _TEAM_LABEL[blob.team], (x, max(y - 2, 10)),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 1, cv2.LINE_AA,
+            img, label, (x, max(y - 2, 10)),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1, cv2.LINE_AA,
         )
 
     for b in frame.enemies:
