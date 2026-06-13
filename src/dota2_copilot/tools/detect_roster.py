@@ -29,7 +29,14 @@ import cv2
 import numpy as np
 
 from ..capture.screen import open_grabber
-from ..config import DEFAULT_ROSTER_PATH, REPO_ROOT, hero_zh
+from ..config import (
+    DEFAULT_ROSTER_PATH,
+    REPO_ROOT,
+    TopbarCalibration,
+    hero_zh,
+    load_topbar_calibration,
+)
+from ..types import ScreenRect
 
 
 TOPBAR_DIR = REPO_ROOT / "assets" / "topbar"
@@ -89,11 +96,22 @@ def _match_one(
     return short, float(score), int(loc[0]), int(loc[1]), width, target_h
 
 
-def detect_roster_from_strip(strip_bgr: np.ndarray) -> list[dict]:
-    """Detect 10 unique heroes in a captured top-strip image.
+def detect_roster_from_strip(
+    strip_bgr: np.ndarray,
+    slot_height: int | None = None,
+    max_results: int = 10,
+) -> list[dict]:
+    """Detect up to 10 unique heroes in a captured top-strip image.
 
     Returns a list (length <= 10) of dicts: {hero, score, x, y, w, h}.
-    Sorted by x position (left → right).
+    Sorted by x position (left -> right).
+
+    If ``slot_height`` is provided (recommended; the height of the calibrated
+    top-bar rect), template matching uses a single inferred width with a small
+    +/-12% variance. This is far more accurate than the blind multi-scale sweep
+    used when no calibration is available, because the top-bar HUD contains
+    many distracting elements at random scales (HP bars, gold counters, kill
+    score, etc.) that produce false positives at unrelated template sizes.
     """
     templates = _load_topbar_templates()
     if not templates:
@@ -101,12 +119,29 @@ def detect_roster_from_strip(strip_bgr: np.ndarray) -> list[dict]:
             f"No topbar templates in {TOPBAR_DIR}. Run scripts/fetch_assets.py."
         )
 
+    if slot_height is not None and slot_height >= 20:
+        # Template aspect is 16:9 (256x144). Slot width follows directly.
+        slot_w = int(round(slot_height * 256 / 144))
+        # +/- ~12% variance to handle any minor cropping.
+        widths = (
+            max(20, int(round(slot_w * 0.92))),
+            slot_w,
+            int(round(slot_w * 1.08)),
+        )
+        # With a tight crop the score floor can safely be lifted.
+        score_thresh = 0.55
+        min_dist = int(round(slot_w * 0.7))
+    else:
+        widths = CANDIDATE_WIDTHS
+        score_thresh = SCORE_THRESHOLD
+        min_dist = MIN_SLOT_DIST
+
     threads = min(8, os.cpu_count() or 4)
     with ThreadPoolExecutor(max_workers=threads) as pool:
         futures = [
             pool.submit(_match_one, strip_bgr, short, bgr, alpha, w)
             for (short, bgr, alpha) in templates
-            for w in CANDIDATE_WIDTHS
+            for w in widths
         ]
         results = [f.result() for f in futures]
 
@@ -123,15 +158,15 @@ def detect_roster_from_strip(strip_bgr: np.ndarray) -> list[dict]:
     sorted_dets = sorted(best.values(), key=lambda d: -d[1])
     kept: list[tuple[str, float, int, int, int, int]] = []
     for d in sorted_dets:
-        if d[1] < SCORE_THRESHOLD:
+        if d[1] < score_thresh:
             continue
-        if any(abs(d[2] - k[2]) < MIN_SLOT_DIST for k in kept):
+        if any(abs(d[2] - k[2]) < min_dist for k in kept):
             continue
         kept.append(d)
-        if len(kept) >= 10:
+        if len(kept) >= max_results:
             break
 
-    # Left → right.
+    # Left -> right.
     kept.sort(key=lambda d: d[2])
     return [
         {"hero": d[0], "score": d[1], "x": d[2], "y": d[3], "w": d[4], "h": d[5]}
@@ -176,16 +211,42 @@ def _countdown(seconds: int) -> None:
         time.sleep(1)
 
 
+def _detect_side(
+    full: np.ndarray,
+    rect: ScreenRect,
+) -> list[dict]:
+    """Crop ``full`` to ``rect``, detect up to 5 heroes, return full-screen-coord dicts."""
+    H, W = full.shape[:2]
+    x0 = max(0, min(rect.x, W - 1))
+    y0 = max(0, min(rect.y, H - 1))
+    x1 = max(x0 + 1, min(rect.x + rect.width, W))
+    y1 = max(y0 + 1, min(rect.y + rect.height, H))
+    strip = full[y0:y1, x0:x1].copy()
+    slot_h = strip.shape[0]
+    dets = detect_roster_from_strip(strip, slot_height=slot_h, max_results=5)
+    for d in dets:
+        d["x"] += x0
+        d["y"] += y0
+    return dets
+
+
 def detect_roster_live(
     delay: int = 5,
     from_image: Path | None = None,
     my_team: str | None = None,
     strip_ratio: float = 0.12,
+    topbar: TopbarCalibration | None = None,
 ) -> Roster:
     """Programmatic entry: grab screen -> detect 10 heroes -> return Roster.
 
-    No disk side effects. Used by ``preview`` and ``record`` at startup.
+    If a top-bar calibration is available (``config/topbar.json``), the two
+    sides are processed independently with the clock/score area in the middle
+    excluded -- this gives the cleanest possible match. Falls back to a blind
+    full-strip scan only when no calibration exists.
     """
+    if topbar is None:
+        topbar = load_topbar_calibration()
+
     if from_image is not None:
         full = cv2.imread(str(from_image))
         if full is None:
@@ -195,14 +256,33 @@ def detect_roster_live(
         with open_grabber() as g:
             full = g.grab_full()
 
-    H = full.shape[0]
+    H, W = full.shape[:2]
+
+    if topbar is not None:
+        radiant_dets = _detect_side(full, topbar.radiant_rect())
+        dire_dets = _detect_side(full, topbar.dire_rect())
+        if not radiant_dets and not dire_dets:
+            raise RuntimeError(
+                "Detected 0 heroes on either side. Re-run "
+                "`dota2-copilot calibrate-topbar` -- the saved rects probably "
+                "don't match the current screen resolution."
+            )
+        return Roster(
+            radiant=[d["hero"] for d in radiant_dets],
+            dire=[d["hero"] for d in dire_dets],
+            my_team=my_team,
+            detections=radiant_dets + dire_dets,
+        )
+
+    # Fallback: blind full-strip scan (less accurate).
     strip_h = max(80, int(H * strip_ratio))
     strip = full[:strip_h, :].copy()
-    dets = detect_roster_from_strip(strip)
+    dets = detect_roster_from_strip(strip, slot_height=None, max_results=10)
     if not dets:
         raise RuntimeError(
-            "Detected 0 heroes in top bar. Make sure all 10 heroes are picked "
-            "and the top bar is fully visible."
+            "Detected 0 heroes in top bar. Hint: run "
+            "`dota2-copilot calibrate-topbar` to mark the exact hero strips -- "
+            "accuracy improves dramatically."
         )
     return Roster(
         radiant=[d["hero"] for d in dets[:5]],

@@ -24,6 +24,7 @@ from .types import ScreenRect
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_APP_CONFIG = REPO_ROOT / "config" / "app.yaml"
 DEFAULT_MINIMAP_CONFIG = REPO_ROOT / "config" / "minimap.json"
+DEFAULT_TOPBAR_CONFIG = REPO_ROOT / "config" / "topbar.json"
 DEFAULT_LANDMARKS_TEMPLATE = REPO_ROOT / "assets" / "map_landmarks.yaml"
 DEFAULT_LANDMARKS_OVERRIDE = REPO_ROOT / "config" / "map_landmarks.json"
 DEFAULT_ROSTER_PATH = REPO_ROOT / "config" / "roster.json"
@@ -239,6 +240,73 @@ def load_minimap_calibration(path: Path | None = None) -> MinimapCalibration:
 
 def save_minimap_calibration(cal: MinimapCalibration, path: Path | None = None) -> Path:
     path = path or DEFAULT_MINIMAP_CONFIG
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(cal.model_dump_json(indent=2), encoding="utf-8")
+    return path
+
+
+# ---------------------------------------------------------------------------
+# Top-bar calibration (location of the 10-hero strip at the top of the HUD)
+# ---------------------------------------------------------------------------
+
+
+class TopbarCalibration(BaseModel):
+    """Screen coordinates of the top-bar hero strips.
+
+    Two separate rectangles -- one for the Radiant 5 portraits on the left and
+    one for the Dire 5 portraits on the right -- so the clock / score area in
+    the middle is excluded entirely. Vertically include only the portrait
+    area (NOT the HP/gold bars below).
+    """
+
+    screen_width: int
+    screen_height: int
+    radiant: _ScreenRectModel
+    dire: _ScreenRectModel
+
+    def radiant_rect(self) -> ScreenRect:
+        return ScreenRect(
+            x=self.radiant.x, y=self.radiant.y,
+            width=self.radiant.width, height=self.radiant.height,
+        )
+
+    def dire_rect(self) -> ScreenRect:
+        return ScreenRect(
+            x=self.dire.x, y=self.dire.y,
+            width=self.dire.width, height=self.dire.height,
+        )
+
+    @classmethod
+    def from_rects(
+        cls,
+        screen_width: int,
+        screen_height: int,
+        radiant: ScreenRect,
+        dire: ScreenRect,
+    ) -> "TopbarCalibration":
+        return cls(
+            screen_width=screen_width,
+            screen_height=screen_height,
+            radiant=_ScreenRectModel(
+                x=radiant.x, y=radiant.y, width=radiant.width, height=radiant.height
+            ),
+            dire=_ScreenRectModel(
+                x=dire.x, y=dire.y, width=dire.width, height=dire.height
+            ),
+        )
+
+
+def load_topbar_calibration(path: Path | None = None) -> TopbarCalibration | None:
+    """Return the saved top-bar calibration, or None if not yet calibrated."""
+    path = path or DEFAULT_TOPBAR_CONFIG
+    if not path.exists():
+        return None
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    return TopbarCalibration.model_validate(raw)
+
+
+def save_topbar_calibration(cal: TopbarCalibration, path: Path | None = None) -> Path:
+    path = path or DEFAULT_TOPBAR_CONFIG
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(cal.model_dump_json(indent=2), encoding="utf-8")
     return path

@@ -48,6 +48,31 @@ def calibrate(
     run_calibration(out_path=out, from_image=from_image, delay=delay)
 
 
+@app.command("calibrate-topbar")
+def calibrate_topbar(
+    out: Optional[Path] = typer.Option(
+        None, "--out", "-o", help="Override output path for topbar.json."
+    ),
+    from_image: Optional[Path] = typer.Option(
+        None, "--from-image", "-i",
+        help="Calibrate from a screenshot file instead of live capture.",
+    ),
+    delay: int = typer.Option(
+        3, "--delay", "-d",
+        help="Seconds to wait before grabbing the screen (so you can Alt+Tab back to Dota).",
+    ),
+) -> None:
+    """Mark the 10-hero strip at the top of the HUD (improves roster accuracy).
+
+    Drag a rectangle that encloses all 10 hero portraits (Radiant #1 through
+    Dire #5), including the clock gap. Vertically, include only the portrait
+    area -- skip the HP/gold bars below. Result -> config/topbar.json.
+    """
+    from .tools.calibrate_topbar import run_topbar_calibration
+
+    run_topbar_calibration(out_path=out, from_image=from_image, delay=delay)
+
+
 @app.command("calibrate-landmarks")
 def calibrate_landmarks(
     from_image: Optional[Path] = typer.Option(
