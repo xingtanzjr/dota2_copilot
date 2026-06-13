@@ -1,0 +1,1664 @@
+{
+  "source": {
+    "constants": "https://api.opendota.com/api/constants/heroes",
+    "cdn": "https://cdn.cloudflare.steamstatic.com"
+  },
+  "minimap_sizes": [
+    28,
+    30,
+    32
+  ],
+  "heroes": [
+    {
+      "id": 1,
+      "short": "antimage",
+      "localized_name": "Anti-Mage",
+      "name_zh": "敌法师",
+      "card": "card/antimage.png",
+      "topbar": "topbar/antimage.png",
+      "minimap": [
+        "minimap/antimage_28.png",
+        "minimap/antimage_30.png",
+        "minimap/antimage_32.png"
+      ]
+    },
+    {
+      "id": 2,
+      "short": "axe",
+      "localized_name": "Axe",
+      "name_zh": "斧王",
+      "card": "card/axe.png",
+      "topbar": "topbar/axe.png",
+      "minimap": [
+        "minimap/axe_28.png",
+        "minimap/axe_30.png",
+        "minimap/axe_32.png"
+      ]
+    },
+    {
+      "id": 3,
+      "short": "bane",
+      "localized_name": "Bane",
+      "name_zh": "祸乱之源",
+      "card": "card/bane.png",
+      "topbar": "topbar/bane.png",
+      "minimap": [
+        "minimap/bane_28.png",
+        "minimap/bane_30.png",
+        "minimap/bane_32.png"
+      ]
+    },
+    {
+      "id": 4,
+      "short": "bloodseeker",
+      "localized_name": "Bloodseeker",
+      "name_zh": "血魔",
+      "card": "card/bloodseeker.png",
+      "topbar": "topbar/bloodseeker.png",
+      "minimap": [
+        "minimap/bloodseeker_28.png",
+        "minimap/bloodseeker_30.png",
+        "minimap/bloodseeker_32.png"
+      ]
+    },
+    {
+      "id": 5,
+      "short": "crystal_maiden",
+      "localized_name": "Crystal Maiden",
+      "name_zh": "水晶室女",
+      "card": "card/crystal_maiden.png",
+      "topbar": "topbar/crystal_maiden.png",
+      "minimap": [
+        "minimap/crystal_maiden_28.png",
+        "minimap/crystal_maiden_30.png",
+        "minimap/crystal_maiden_32.png"
+      ]
+    },
+    {
+      "id": 6,
+      "short": "drow_ranger",
+      "localized_name": "Drow Ranger",
+      "name_zh": "卓尔游侠",
+      "card": "card/drow_ranger.png",
+      "topbar": "topbar/drow_ranger.png",
+      "minimap": [
+        "minimap/drow_ranger_28.png",
+        "minimap/drow_ranger_30.png",
+        "minimap/drow_ranger_32.png"
+      ]
+    },
+    {
+      "id": 7,
+      "short": "earthshaker",
+      "localized_name": "Earthshaker",
+      "name_zh": "撼地者",
+      "card": "card/earthshaker.png",
+      "topbar": "topbar/earthshaker.png",
+      "minimap": [
+        "minimap/earthshaker_28.png",
+        "minimap/earthshaker_30.png",
+        "minimap/earthshaker_32.png"
+      ]
+    },
+    {
+      "id": 8,
+      "short": "juggernaut",
+      "localized_name": "Juggernaut",
+      "name_zh": "主宰",
+      "card": "card/juggernaut.png",
+      "topbar": "topbar/juggernaut.png",
+      "minimap": [
+        "minimap/juggernaut_28.png",
+        "minimap/juggernaut_30.png",
+        "minimap/juggernaut_32.png"
+      ]
+    },
+    {
+      "id": 9,
+      "short": "mirana",
+      "localized_name": "Mirana",
+      "name_zh": "米拉娜",
+      "card": "card/mirana.png",
+      "topbar": "topbar/mirana.png",
+      "minimap": [
+        "minimap/mirana_28.png",
+        "minimap/mirana_30.png",
+        "minimap/mirana_32.png"
+      ]
+    },
+    {
+      "id": 10,
+      "short": "morphling",
+      "localized_name": "Morphling",
+      "name_zh": "变体精灵",
+      "card": "card/morphling.png",
+      "topbar": "topbar/morphling.png",
+      "minimap": [
+        "minimap/morphling_28.png",
+        "minimap/morphling_30.png",
+        "minimap/morphling_32.png"
+      ]
+    },
+    {
+      "id": 11,
+      "short": "nevermore",
+      "localized_name": "Shadow Fiend",
+      "name_zh": "影魔",
+      "card": "card/nevermore.png",
+      "topbar": "topbar/nevermore.png",
+      "minimap": [
+        "minimap/nevermore_28.png",
+        "minimap/nevermore_30.png",
+        "minimap/nevermore_32.png"
+      ]
+    },
+    {
+      "id": 12,
+      "short": "phantom_lancer",
+      "localized_name": "Phantom Lancer",
+      "name_zh": "幻影长矛手",
+      "card": "card/phantom_lancer.png",
+      "topbar": "topbar/phantom_lancer.png",
+      "minimap": [
+        "minimap/phantom_lancer_28.png",
+        "minimap/phantom_lancer_30.png",
+        "minimap/phantom_lancer_32.png"
+      ]
+    },
+    {
+      "id": 13,
+      "short": "puck",
+      "localized_name": "Puck",
+      "name_zh": "帕克",
+      "card": "card/puck.png",
+      "topbar": "topbar/puck.png",
+      "minimap": [
+        "minimap/puck_28.png",
+        "minimap/puck_30.png",
+        "minimap/puck_32.png"
+      ]
+    },
+    {
+      "id": 14,
+      "short": "pudge",
+      "localized_name": "Pudge",
+      "name_zh": "帕吉",
+      "card": "card/pudge.png",
+      "topbar": "topbar/pudge.png",
+      "minimap": [
+        "minimap/pudge_28.png",
+        "minimap/pudge_30.png",
+        "minimap/pudge_32.png"
+      ]
+    },
+    {
+      "id": 15,
+      "short": "razor",
+      "localized_name": "Razor",
+      "name_zh": "雷泽",
+      "card": "card/razor.png",
+      "topbar": "topbar/razor.png",
+      "minimap": [
+        "minimap/razor_28.png",
+        "minimap/razor_30.png",
+        "minimap/razor_32.png"
+      ]
+    },
+    {
+      "id": 16,
+      "short": "sand_king",
+      "localized_name": "Sand King",
+      "name_zh": "沙王",
+      "card": "card/sand_king.png",
+      "topbar": "topbar/sand_king.png",
+      "minimap": [
+        "minimap/sand_king_28.png",
+        "minimap/sand_king_30.png",
+        "minimap/sand_king_32.png"
+      ]
+    },
+    {
+      "id": 17,
+      "short": "storm_spirit",
+      "localized_name": "Storm Spirit",
+      "name_zh": "风暴之灵",
+      "card": "card/storm_spirit.png",
+      "topbar": "topbar/storm_spirit.png",
+      "minimap": [
+        "minimap/storm_spirit_28.png",
+        "minimap/storm_spirit_30.png",
+        "minimap/storm_spirit_32.png"
+      ]
+    },
+    {
+      "id": 18,
+      "short": "sven",
+      "localized_name": "Sven",
+      "name_zh": "斯温",
+      "card": "card/sven.png",
+      "topbar": "topbar/sven.png",
+      "minimap": [
+        "minimap/sven_28.png",
+        "minimap/sven_30.png",
+        "minimap/sven_32.png"
+      ]
+    },
+    {
+      "id": 19,
+      "short": "tiny",
+      "localized_name": "Tiny",
+      "name_zh": "小小",
+      "card": "card/tiny.png",
+      "topbar": "topbar/tiny.png",
+      "minimap": [
+        "minimap/tiny_28.png",
+        "minimap/tiny_30.png",
+        "minimap/tiny_32.png"
+      ]
+    },
+    {
+      "id": 20,
+      "short": "vengefulspirit",
+      "localized_name": "Vengeful Spirit",
+      "name_zh": "复仇之魂",
+      "card": "card/vengefulspirit.png",
+      "topbar": "topbar/vengefulspirit.png",
+      "minimap": [
+        "minimap/vengefulspirit_28.png",
+        "minimap/vengefulspirit_30.png",
+        "minimap/vengefulspirit_32.png"
+      ]
+    },
+    {
+      "id": 21,
+      "short": "windrunner",
+      "localized_name": "Windranger",
+      "name_zh": "风行者",
+      "card": "card/windrunner.png",
+      "topbar": "topbar/windrunner.png",
+      "minimap": [
+        "minimap/windrunner_28.png",
+        "minimap/windrunner_30.png",
+        "minimap/windrunner_32.png"
+      ]
+    },
+    {
+      "id": 22,
+      "short": "zuus",
+      "localized_name": "Zeus",
+      "name_zh": "宙斯",
+      "card": "card/zuus.png",
+      "topbar": "topbar/zuus.png",
+      "minimap": [
+        "minimap/zuus_28.png",
+        "minimap/zuus_30.png",
+        "minimap/zuus_32.png"
+      ]
+    },
+    {
+      "id": 23,
+      "short": "kunkka",
+      "localized_name": "Kunkka",
+      "name_zh": "昆卡",
+      "card": "card/kunkka.png",
+      "topbar": "topbar/kunkka.png",
+      "minimap": [
+        "minimap/kunkka_28.png",
+        "minimap/kunkka_30.png",
+        "minimap/kunkka_32.png"
+      ]
+    },
+    {
+      "id": 25,
+      "short": "lina",
+      "localized_name": "Lina",
+      "name_zh": "莉娜",
+      "card": "card/lina.png",
+      "topbar": "topbar/lina.png",
+      "minimap": [
+        "minimap/lina_28.png",
+        "minimap/lina_30.png",
+        "minimap/lina_32.png"
+      ]
+    },
+    {
+      "id": 26,
+      "short": "lion",
+      "localized_name": "Lion",
+      "name_zh": "莱恩",
+      "card": "card/lion.png",
+      "topbar": "topbar/lion.png",
+      "minimap": [
+        "minimap/lion_28.png",
+        "minimap/lion_30.png",
+        "minimap/lion_32.png"
+      ]
+    },
+    {
+      "id": 27,
+      "short": "shadow_shaman",
+      "localized_name": "Shadow Shaman",
+      "name_zh": "暗影萨满",
+      "card": "card/shadow_shaman.png",
+      "topbar": "topbar/shadow_shaman.png",
+      "minimap": [
+        "minimap/shadow_shaman_28.png",
+        "minimap/shadow_shaman_30.png",
+        "minimap/shadow_shaman_32.png"
+      ]
+    },
+    {
+      "id": 28,
+      "short": "slardar",
+      "localized_name": "Slardar",
+      "name_zh": "斯拉达",
+      "card": "card/slardar.png",
+      "topbar": "topbar/slardar.png",
+      "minimap": [
+        "minimap/slardar_28.png",
+        "minimap/slardar_30.png",
+        "minimap/slardar_32.png"
+      ]
+    },
+    {
+      "id": 29,
+      "short": "tidehunter",
+      "localized_name": "Tidehunter",
+      "name_zh": "潮汐猎人",
+      "card": "card/tidehunter.png",
+      "topbar": "topbar/tidehunter.png",
+      "minimap": [
+        "minimap/tidehunter_28.png",
+        "minimap/tidehunter_30.png",
+        "minimap/tidehunter_32.png"
+      ]
+    },
+    {
+      "id": 30,
+      "short": "witch_doctor",
+      "localized_name": "Witch Doctor",
+      "name_zh": "巫医",
+      "card": "card/witch_doctor.png",
+      "topbar": "topbar/witch_doctor.png",
+      "minimap": [
+        "minimap/witch_doctor_28.png",
+        "minimap/witch_doctor_30.png",
+        "minimap/witch_doctor_32.png"
+      ]
+    },
+    {
+      "id": 31,
+      "short": "lich",
+      "localized_name": "Lich",
+      "name_zh": "巫妖",
+      "card": "card/lich.png",
+      "topbar": "topbar/lich.png",
+      "minimap": [
+        "minimap/lich_28.png",
+        "minimap/lich_30.png",
+        "minimap/lich_32.png"
+      ]
+    },
+    {
+      "id": 32,
+      "short": "riki",
+      "localized_name": "Riki",
+      "name_zh": "力丸",
+      "card": "card/riki.png",
+      "topbar": "topbar/riki.png",
+      "minimap": [
+        "minimap/riki_28.png",
+        "minimap/riki_30.png",
+        "minimap/riki_32.png"
+      ]
+    },
+    {
+      "id": 33,
+      "short": "enigma",
+      "localized_name": "Enigma",
+      "name_zh": "谜团",
+      "card": "card/enigma.png",
+      "topbar": "topbar/enigma.png",
+      "minimap": [
+        "minimap/enigma_28.png",
+        "minimap/enigma_30.png",
+        "minimap/enigma_32.png"
+      ]
+    },
+    {
+      "id": 34,
+      "short": "tinker",
+      "localized_name": "Tinker",
+      "name_zh": "修补匠",
+      "card": "card/tinker.png",
+      "topbar": "topbar/tinker.png",
+      "minimap": [
+        "minimap/tinker_28.png",
+        "minimap/tinker_30.png",
+        "minimap/tinker_32.png"
+      ]
+    },
+    {
+      "id": 35,
+      "short": "sniper",
+      "localized_name": "Sniper",
+      "name_zh": "狙击手",
+      "card": "card/sniper.png",
+      "topbar": "topbar/sniper.png",
+      "minimap": [
+        "minimap/sniper_28.png",
+        "minimap/sniper_30.png",
+        "minimap/sniper_32.png"
+      ]
+    },
+    {
+      "id": 36,
+      "short": "necrolyte",
+      "localized_name": "Necrophos",
+      "name_zh": "瘟疫法师",
+      "card": "card/necrolyte.png",
+      "topbar": "topbar/necrolyte.png",
+      "minimap": [
+        "minimap/necrolyte_28.png",
+        "minimap/necrolyte_30.png",
+        "minimap/necrolyte_32.png"
+      ]
+    },
+    {
+      "id": 37,
+      "short": "warlock",
+      "localized_name": "Warlock",
+      "name_zh": "术士",
+      "card": "card/warlock.png",
+      "topbar": "topbar/warlock.png",
+      "minimap": [
+        "minimap/warlock_28.png",
+        "minimap/warlock_30.png",
+        "minimap/warlock_32.png"
+      ]
+    },
+    {
+      "id": 38,
+      "short": "beastmaster",
+      "localized_name": "Beastmaster",
+      "name_zh": "兽王",
+      "card": "card/beastmaster.png",
+      "topbar": "topbar/beastmaster.png",
+      "minimap": [
+        "minimap/beastmaster_28.png",
+        "minimap/beastmaster_30.png",
+        "minimap/beastmaster_32.png"
+      ]
+    },
+    {
+      "id": 39,
+      "short": "queenofpain",
+      "localized_name": "Queen of Pain",
+      "name_zh": "痛苦女王",
+      "card": "card/queenofpain.png",
+      "topbar": "topbar/queenofpain.png",
+      "minimap": [
+        "minimap/queenofpain_28.png",
+        "minimap/queenofpain_30.png",
+        "minimap/queenofpain_32.png"
+      ]
+    },
+    {
+      "id": 40,
+      "short": "venomancer",
+      "localized_name": "Venomancer",
+      "name_zh": "剧毒术士",
+      "card": "card/venomancer.png",
+      "topbar": "topbar/venomancer.png",
+      "minimap": [
+        "minimap/venomancer_28.png",
+        "minimap/venomancer_30.png",
+        "minimap/venomancer_32.png"
+      ]
+    },
+    {
+      "id": 41,
+      "short": "faceless_void",
+      "localized_name": "Faceless Void",
+      "name_zh": "虚空假面",
+      "card": "card/faceless_void.png",
+      "topbar": "topbar/faceless_void.png",
+      "minimap": [
+        "minimap/faceless_void_28.png",
+        "minimap/faceless_void_30.png",
+        "minimap/faceless_void_32.png"
+      ]
+    },
+    {
+      "id": 42,
+      "short": "skeleton_king",
+      "localized_name": "Wraith King",
+      "name_zh": "冥魂大帝",
+      "card": "card/skeleton_king.png",
+      "topbar": "topbar/skeleton_king.png",
+      "minimap": [
+        "minimap/skeleton_king_28.png",
+        "minimap/skeleton_king_30.png",
+        "minimap/skeleton_king_32.png"
+      ]
+    },
+    {
+      "id": 43,
+      "short": "death_prophet",
+      "localized_name": "Death Prophet",
+      "name_zh": "死亡先知",
+      "card": "card/death_prophet.png",
+      "topbar": "topbar/death_prophet.png",
+      "minimap": [
+        "minimap/death_prophet_28.png",
+        "minimap/death_prophet_30.png",
+        "minimap/death_prophet_32.png"
+      ]
+    },
+    {
+      "id": 44,
+      "short": "phantom_assassin",
+      "localized_name": "Phantom Assassin",
+      "name_zh": "幻影刺客",
+      "card": "card/phantom_assassin.png",
+      "topbar": "topbar/phantom_assassin.png",
+      "minimap": [
+        "minimap/phantom_assassin_28.png",
+        "minimap/phantom_assassin_30.png",
+        "minimap/phantom_assassin_32.png"
+      ]
+    },
+    {
+      "id": 45,
+      "short": "pugna",
+      "localized_name": "Pugna",
+      "name_zh": "帕格纳",
+      "card": "card/pugna.png",
+      "topbar": "topbar/pugna.png",
+      "minimap": [
+        "minimap/pugna_28.png",
+        "minimap/pugna_30.png",
+        "minimap/pugna_32.png"
+      ]
+    },
+    {
+      "id": 46,
+      "short": "templar_assassin",
+      "localized_name": "Templar Assassin",
+      "name_zh": "圣堂刺客",
+      "card": "card/templar_assassin.png",
+      "topbar": "topbar/templar_assassin.png",
+      "minimap": [
+        "minimap/templar_assassin_28.png",
+        "minimap/templar_assassin_30.png",
+        "minimap/templar_assassin_32.png"
+      ]
+    },
+    {
+      "id": 47,
+      "short": "viper",
+      "localized_name": "Viper",
+      "name_zh": "冥界亚龙",
+      "card": "card/viper.png",
+      "topbar": "topbar/viper.png",
+      "minimap": [
+        "minimap/viper_28.png",
+        "minimap/viper_30.png",
+        "minimap/viper_32.png"
+      ]
+    },
+    {
+      "id": 48,
+      "short": "luna",
+      "localized_name": "Luna",
+      "name_zh": "露娜",
+      "card": "card/luna.png",
+      "topbar": "topbar/luna.png",
+      "minimap": [
+        "minimap/luna_28.png",
+        "minimap/luna_30.png",
+        "minimap/luna_32.png"
+      ]
+    },
+    {
+      "id": 49,
+      "short": "dragon_knight",
+      "localized_name": "Dragon Knight",
+      "name_zh": "龙骑士",
+      "card": "card/dragon_knight.png",
+      "topbar": "topbar/dragon_knight.png",
+      "minimap": [
+        "minimap/dragon_knight_28.png",
+        "minimap/dragon_knight_30.png",
+        "minimap/dragon_knight_32.png"
+      ]
+    },
+    {
+      "id": 50,
+      "short": "dazzle",
+      "localized_name": "Dazzle",
+      "name_zh": "戴泽",
+      "card": "card/dazzle.png",
+      "topbar": "topbar/dazzle.png",
+      "minimap": [
+        "minimap/dazzle_28.png",
+        "minimap/dazzle_30.png",
+        "minimap/dazzle_32.png"
+      ]
+    },
+    {
+      "id": 51,
+      "short": "rattletrap",
+      "localized_name": "Clockwerk",
+      "name_zh": "发条技师",
+      "card": "card/rattletrap.png",
+      "topbar": "topbar/rattletrap.png",
+      "minimap": [
+        "minimap/rattletrap_28.png",
+        "minimap/rattletrap_30.png",
+        "minimap/rattletrap_32.png"
+      ]
+    },
+    {
+      "id": 52,
+      "short": "leshrac",
+      "localized_name": "Leshrac",
+      "name_zh": "拉席克",
+      "card": "card/leshrac.png",
+      "topbar": "topbar/leshrac.png",
+      "minimap": [
+        "minimap/leshrac_28.png",
+        "minimap/leshrac_30.png",
+        "minimap/leshrac_32.png"
+      ]
+    },
+    {
+      "id": 53,
+      "short": "furion",
+      "localized_name": "Nature's Prophet",
+      "name_zh": "自然先知",
+      "card": "card/furion.png",
+      "topbar": "topbar/furion.png",
+      "minimap": [
+        "minimap/furion_28.png",
+        "minimap/furion_30.png",
+        "minimap/furion_32.png"
+      ]
+    },
+    {
+      "id": 54,
+      "short": "life_stealer",
+      "localized_name": "Lifestealer",
+      "name_zh": "噬魂鬼",
+      "card": "card/life_stealer.png",
+      "topbar": "topbar/life_stealer.png",
+      "minimap": [
+        "minimap/life_stealer_28.png",
+        "minimap/life_stealer_30.png",
+        "minimap/life_stealer_32.png"
+      ]
+    },
+    {
+      "id": 55,
+      "short": "dark_seer",
+      "localized_name": "Dark Seer",
+      "name_zh": "黑暗贤者",
+      "card": "card/dark_seer.png",
+      "topbar": "topbar/dark_seer.png",
+      "minimap": [
+        "minimap/dark_seer_28.png",
+        "minimap/dark_seer_30.png",
+        "minimap/dark_seer_32.png"
+      ]
+    },
+    {
+      "id": 56,
+      "short": "clinkz",
+      "localized_name": "Clinkz",
+      "name_zh": "克林克兹",
+      "card": "card/clinkz.png",
+      "topbar": "topbar/clinkz.png",
+      "minimap": [
+        "minimap/clinkz_28.png",
+        "minimap/clinkz_30.png",
+        "minimap/clinkz_32.png"
+      ]
+    },
+    {
+      "id": 57,
+      "short": "omniknight",
+      "localized_name": "Omniknight",
+      "name_zh": "全能骑士",
+      "card": "card/omniknight.png",
+      "topbar": "topbar/omniknight.png",
+      "minimap": [
+        "minimap/omniknight_28.png",
+        "minimap/omniknight_30.png",
+        "minimap/omniknight_32.png"
+      ]
+    },
+    {
+      "id": 58,
+      "short": "enchantress",
+      "localized_name": "Enchantress",
+      "name_zh": "魅惑魔女",
+      "card": "card/enchantress.png",
+      "topbar": "topbar/enchantress.png",
+      "minimap": [
+        "minimap/enchantress_28.png",
+        "minimap/enchantress_30.png",
+        "minimap/enchantress_32.png"
+      ]
+    },
+    {
+      "id": 59,
+      "short": "huskar",
+      "localized_name": "Huskar",
+      "name_zh": "哈斯卡",
+      "card": "card/huskar.png",
+      "topbar": "topbar/huskar.png",
+      "minimap": [
+        "minimap/huskar_28.png",
+        "minimap/huskar_30.png",
+        "minimap/huskar_32.png"
+      ]
+    },
+    {
+      "id": 60,
+      "short": "night_stalker",
+      "localized_name": "Night Stalker",
+      "name_zh": "暗夜魔王",
+      "card": "card/night_stalker.png",
+      "topbar": "topbar/night_stalker.png",
+      "minimap": [
+        "minimap/night_stalker_28.png",
+        "minimap/night_stalker_30.png",
+        "minimap/night_stalker_32.png"
+      ]
+    },
+    {
+      "id": 61,
+      "short": "broodmother",
+      "localized_name": "Broodmother",
+      "name_zh": "育母蜘蛛",
+      "card": "card/broodmother.png",
+      "topbar": "topbar/broodmother.png",
+      "minimap": [
+        "minimap/broodmother_28.png",
+        "minimap/broodmother_30.png",
+        "minimap/broodmother_32.png"
+      ]
+    },
+    {
+      "id": 62,
+      "short": "bounty_hunter",
+      "localized_name": "Bounty Hunter",
+      "name_zh": "赏金猎人",
+      "card": "card/bounty_hunter.png",
+      "topbar": "topbar/bounty_hunter.png",
+      "minimap": [
+        "minimap/bounty_hunter_28.png",
+        "minimap/bounty_hunter_30.png",
+        "minimap/bounty_hunter_32.png"
+      ]
+    },
+    {
+      "id": 63,
+      "short": "weaver",
+      "localized_name": "Weaver",
+      "name_zh": "编织者",
+      "card": "card/weaver.png",
+      "topbar": "topbar/weaver.png",
+      "minimap": [
+        "minimap/weaver_28.png",
+        "minimap/weaver_30.png",
+        "minimap/weaver_32.png"
+      ]
+    },
+    {
+      "id": 64,
+      "short": "jakiro",
+      "localized_name": "Jakiro",
+      "name_zh": "杰奇洛",
+      "card": "card/jakiro.png",
+      "topbar": "topbar/jakiro.png",
+      "minimap": [
+        "minimap/jakiro_28.png",
+        "minimap/jakiro_30.png",
+        "minimap/jakiro_32.png"
+      ]
+    },
+    {
+      "id": 65,
+      "short": "batrider",
+      "localized_name": "Batrider",
+      "name_zh": "蝙蝠骑士",
+      "card": "card/batrider.png",
+      "topbar": "topbar/batrider.png",
+      "minimap": [
+        "minimap/batrider_28.png",
+        "minimap/batrider_30.png",
+        "minimap/batrider_32.png"
+      ]
+    },
+    {
+      "id": 66,
+      "short": "chen",
+      "localized_name": "Chen",
+      "name_zh": "陈",
+      "card": "card/chen.png",
+      "topbar": "topbar/chen.png",
+      "minimap": [
+        "minimap/chen_28.png",
+        "minimap/chen_30.png",
+        "minimap/chen_32.png"
+      ]
+    },
+    {
+      "id": 67,
+      "short": "spectre",
+      "localized_name": "Spectre",
+      "name_zh": "幽鬼",
+      "card": "card/spectre.png",
+      "topbar": "topbar/spectre.png",
+      "minimap": [
+        "minimap/spectre_28.png",
+        "minimap/spectre_30.png",
+        "minimap/spectre_32.png"
+      ]
+    },
+    {
+      "id": 68,
+      "short": "ancient_apparition",
+      "localized_name": "Ancient Apparition",
+      "name_zh": "远古冰魄",
+      "card": "card/ancient_apparition.png",
+      "topbar": "topbar/ancient_apparition.png",
+      "minimap": [
+        "minimap/ancient_apparition_28.png",
+        "minimap/ancient_apparition_30.png",
+        "minimap/ancient_apparition_32.png"
+      ]
+    },
+    {
+      "id": 69,
+      "short": "doom_bringer",
+      "localized_name": "Doom",
+      "name_zh": "末日使者",
+      "card": "card/doom_bringer.png",
+      "topbar": "topbar/doom_bringer.png",
+      "minimap": [
+        "minimap/doom_bringer_28.png",
+        "minimap/doom_bringer_30.png",
+        "minimap/doom_bringer_32.png"
+      ]
+    },
+    {
+      "id": 70,
+      "short": "ursa",
+      "localized_name": "Ursa",
+      "name_zh": "熊战士",
+      "card": "card/ursa.png",
+      "topbar": "topbar/ursa.png",
+      "minimap": [
+        "minimap/ursa_28.png",
+        "minimap/ursa_30.png",
+        "minimap/ursa_32.png"
+      ]
+    },
+    {
+      "id": 71,
+      "short": "spirit_breaker",
+      "localized_name": "Spirit Breaker",
+      "name_zh": "裂魂人",
+      "card": "card/spirit_breaker.png",
+      "topbar": "topbar/spirit_breaker.png",
+      "minimap": [
+        "minimap/spirit_breaker_28.png",
+        "minimap/spirit_breaker_30.png",
+        "minimap/spirit_breaker_32.png"
+      ]
+    },
+    {
+      "id": 72,
+      "short": "gyrocopter",
+      "localized_name": "Gyrocopter",
+      "name_zh": "矮人直升机",
+      "card": "card/gyrocopter.png",
+      "topbar": "topbar/gyrocopter.png",
+      "minimap": [
+        "minimap/gyrocopter_28.png",
+        "minimap/gyrocopter_30.png",
+        "minimap/gyrocopter_32.png"
+      ]
+    },
+    {
+      "id": 73,
+      "short": "alchemist",
+      "localized_name": "Alchemist",
+      "name_zh": "炼金术士",
+      "card": "card/alchemist.png",
+      "topbar": "topbar/alchemist.png",
+      "minimap": [
+        "minimap/alchemist_28.png",
+        "minimap/alchemist_30.png",
+        "minimap/alchemist_32.png"
+      ]
+    },
+    {
+      "id": 74,
+      "short": "invoker",
+      "localized_name": "Invoker",
+      "name_zh": "祈求者",
+      "card": "card/invoker.png",
+      "topbar": "topbar/invoker.png",
+      "minimap": [
+        "minimap/invoker_28.png",
+        "minimap/invoker_30.png",
+        "minimap/invoker_32.png"
+      ]
+    },
+    {
+      "id": 75,
+      "short": "silencer",
+      "localized_name": "Silencer",
+      "name_zh": "沉默术士",
+      "card": "card/silencer.png",
+      "topbar": "topbar/silencer.png",
+      "minimap": [
+        "minimap/silencer_28.png",
+        "minimap/silencer_30.png",
+        "minimap/silencer_32.png"
+      ]
+    },
+    {
+      "id": 76,
+      "short": "obsidian_destroyer",
+      "localized_name": "Outworld Devourer",
+      "name_zh": "殁境神蚀者",
+      "card": "card/obsidian_destroyer.png",
+      "topbar": "topbar/obsidian_destroyer.png",
+      "minimap": [
+        "minimap/obsidian_destroyer_28.png",
+        "minimap/obsidian_destroyer_30.png",
+        "minimap/obsidian_destroyer_32.png"
+      ]
+    },
+    {
+      "id": 77,
+      "short": "lycan",
+      "localized_name": "Lycan",
+      "name_zh": "狼人",
+      "card": "card/lycan.png",
+      "topbar": "topbar/lycan.png",
+      "minimap": [
+        "minimap/lycan_28.png",
+        "minimap/lycan_30.png",
+        "minimap/lycan_32.png"
+      ]
+    },
+    {
+      "id": 78,
+      "short": "brewmaster",
+      "localized_name": "Brewmaster",
+      "name_zh": "酒仙",
+      "card": "card/brewmaster.png",
+      "topbar": "topbar/brewmaster.png",
+      "minimap": [
+        "minimap/brewmaster_28.png",
+        "minimap/brewmaster_30.png",
+        "minimap/brewmaster_32.png"
+      ]
+    },
+    {
+      "id": 79,
+      "short": "shadow_demon",
+      "localized_name": "Shadow Demon",
+      "name_zh": "暗影恶魔",
+      "card": "card/shadow_demon.png",
+      "topbar": "topbar/shadow_demon.png",
+      "minimap": [
+        "minimap/shadow_demon_28.png",
+        "minimap/shadow_demon_30.png",
+        "minimap/shadow_demon_32.png"
+      ]
+    },
+    {
+      "id": 80,
+      "short": "lone_druid",
+      "localized_name": "Lone Druid",
+      "name_zh": "独行德鲁伊",
+      "card": "card/lone_druid.png",
+      "topbar": "topbar/lone_druid.png",
+      "minimap": [
+        "minimap/lone_druid_28.png",
+        "minimap/lone_druid_30.png",
+        "minimap/lone_druid_32.png"
+      ]
+    },
+    {
+      "id": 81,
+      "short": "chaos_knight",
+      "localized_name": "Chaos Knight",
+      "name_zh": "混沌骑士",
+      "card": "card/chaos_knight.png",
+      "topbar": "topbar/chaos_knight.png",
+      "minimap": [
+        "minimap/chaos_knight_28.png",
+        "minimap/chaos_knight_30.png",
+        "minimap/chaos_knight_32.png"
+      ]
+    },
+    {
+      "id": 82,
+      "short": "meepo",
+      "localized_name": "Meepo",
+      "name_zh": "米波",
+      "card": "card/meepo.png",
+      "topbar": "topbar/meepo.png",
+      "minimap": [
+        "minimap/meepo_28.png",
+        "minimap/meepo_30.png",
+        "minimap/meepo_32.png"
+      ]
+    },
+    {
+      "id": 83,
+      "short": "treant",
+      "localized_name": "Treant Protector",
+      "name_zh": "树精卫士",
+      "card": "card/treant.png",
+      "topbar": "topbar/treant.png",
+      "minimap": [
+        "minimap/treant_28.png",
+        "minimap/treant_30.png",
+        "minimap/treant_32.png"
+      ]
+    },
+    {
+      "id": 84,
+      "short": "ogre_magi",
+      "localized_name": "Ogre Magi",
+      "name_zh": "食人魔魔法师",
+      "card": "card/ogre_magi.png",
+      "topbar": "topbar/ogre_magi.png",
+      "minimap": [
+        "minimap/ogre_magi_28.png",
+        "minimap/ogre_magi_30.png",
+        "minimap/ogre_magi_32.png"
+      ]
+    },
+    {
+      "id": 85,
+      "short": "undying",
+      "localized_name": "Undying",
+      "name_zh": "不朽尸王",
+      "card": "card/undying.png",
+      "topbar": "topbar/undying.png",
+      "minimap": [
+        "minimap/undying_28.png",
+        "minimap/undying_30.png",
+        "minimap/undying_32.png"
+      ]
+    },
+    {
+      "id": 86,
+      "short": "rubick",
+      "localized_name": "Rubick",
+      "name_zh": "拉比克",
+      "card": "card/rubick.png",
+      "topbar": "topbar/rubick.png",
+      "minimap": [
+        "minimap/rubick_28.png",
+        "minimap/rubick_30.png",
+        "minimap/rubick_32.png"
+      ]
+    },
+    {
+      "id": 87,
+      "short": "disruptor",
+      "localized_name": "Disruptor",
+      "name_zh": "干扰者",
+      "card": "card/disruptor.png",
+      "topbar": "topbar/disruptor.png",
+      "minimap": [
+        "minimap/disruptor_28.png",
+        "minimap/disruptor_30.png",
+        "minimap/disruptor_32.png"
+      ]
+    },
+    {
+      "id": 88,
+      "short": "nyx_assassin",
+      "localized_name": "Nyx Assassin",
+      "name_zh": "司夜刺客",
+      "card": "card/nyx_assassin.png",
+      "topbar": "topbar/nyx_assassin.png",
+      "minimap": [
+        "minimap/nyx_assassin_28.png",
+        "minimap/nyx_assassin_30.png",
+        "minimap/nyx_assassin_32.png"
+      ]
+    },
+    {
+      "id": 89,
+      "short": "naga_siren",
+      "localized_name": "Naga Siren",
+      "name_zh": "娜迦海妖",
+      "card": "card/naga_siren.png",
+      "topbar": "topbar/naga_siren.png",
+      "minimap": [
+        "minimap/naga_siren_28.png",
+        "minimap/naga_siren_30.png",
+        "minimap/naga_siren_32.png"
+      ]
+    },
+    {
+      "id": 90,
+      "short": "keeper_of_the_light",
+      "localized_name": "Keeper of the Light",
+      "name_zh": "光之守卫",
+      "card": "card/keeper_of_the_light.png",
+      "topbar": "topbar/keeper_of_the_light.png",
+      "minimap": [
+        "minimap/keeper_of_the_light_28.png",
+        "minimap/keeper_of_the_light_30.png",
+        "minimap/keeper_of_the_light_32.png"
+      ]
+    },
+    {
+      "id": 91,
+      "short": "wisp",
+      "localized_name": "Io",
+      "name_zh": "艾欧",
+      "card": "card/wisp.png",
+      "topbar": "topbar/wisp.png",
+      "minimap": [
+        "minimap/wisp_28.png",
+        "minimap/wisp_30.png",
+        "minimap/wisp_32.png"
+      ]
+    },
+    {
+      "id": 92,
+      "short": "visage",
+      "localized_name": "Visage",
+      "name_zh": "维萨吉",
+      "card": "card/visage.png",
+      "topbar": "topbar/visage.png",
+      "minimap": [
+        "minimap/visage_28.png",
+        "minimap/visage_30.png",
+        "minimap/visage_32.png"
+      ]
+    },
+    {
+      "id": 93,
+      "short": "slark",
+      "localized_name": "Slark",
+      "name_zh": "斯拉克",
+      "card": "card/slark.png",
+      "topbar": "topbar/slark.png",
+      "minimap": [
+        "minimap/slark_28.png",
+        "minimap/slark_30.png",
+        "minimap/slark_32.png"
+      ]
+    },
+    {
+      "id": 94,
+      "short": "medusa",
+      "localized_name": "Medusa",
+      "name_zh": "美杜莎",
+      "card": "card/medusa.png",
+      "topbar": "topbar/medusa.png",
+      "minimap": [
+        "minimap/medusa_28.png",
+        "minimap/medusa_30.png",
+        "minimap/medusa_32.png"
+      ]
+    },
+    {
+      "id": 95,
+      "short": "troll_warlord",
+      "localized_name": "Troll Warlord",
+      "name_zh": "巨魔战将",
+      "card": "card/troll_warlord.png",
+      "topbar": "topbar/troll_warlord.png",
+      "minimap": [
+        "minimap/troll_warlord_28.png",
+        "minimap/troll_warlord_30.png",
+        "minimap/troll_warlord_32.png"
+      ]
+    },
+    {
+      "id": 96,
+      "short": "centaur",
+      "localized_name": "Centaur Warrunner",
+      "name_zh": "半人马战行者",
+      "card": "card/centaur.png",
+      "topbar": "topbar/centaur.png",
+      "minimap": [
+        "minimap/centaur_28.png",
+        "minimap/centaur_30.png",
+        "minimap/centaur_32.png"
+      ]
+    },
+    {
+      "id": 97,
+      "short": "magnataur",
+      "localized_name": "Magnus",
+      "name_zh": "马格纳斯",
+      "card": "card/magnataur.png",
+      "topbar": "topbar/magnataur.png",
+      "minimap": [
+        "minimap/magnataur_28.png",
+        "minimap/magnataur_30.png",
+        "minimap/magnataur_32.png"
+      ]
+    },
+    {
+      "id": 98,
+      "short": "shredder",
+      "localized_name": "Timbersaw",
+      "name_zh": "伐木机",
+      "card": "card/shredder.png",
+      "topbar": "topbar/shredder.png",
+      "minimap": [
+        "minimap/shredder_28.png",
+        "minimap/shredder_30.png",
+        "minimap/shredder_32.png"
+      ]
+    },
+    {
+      "id": 99,
+      "short": "bristleback",
+      "localized_name": "Bristleback",
+      "name_zh": "钢背兽",
+      "card": "card/bristleback.png",
+      "topbar": "topbar/bristleback.png",
+      "minimap": [
+        "minimap/bristleback_28.png",
+        "minimap/bristleback_30.png",
+        "minimap/bristleback_32.png"
+      ]
+    },
+    {
+      "id": 100,
+      "short": "tusk",
+      "localized_name": "Tusk",
+      "name_zh": "巨牙海民",
+      "card": "card/tusk.png",
+      "topbar": "topbar/tusk.png",
+      "minimap": [
+        "minimap/tusk_28.png",
+        "minimap/tusk_30.png",
+        "minimap/tusk_32.png"
+      ]
+    },
+    {
+      "id": 101,
+      "short": "skywrath_mage",
+      "localized_name": "Skywrath Mage",
+      "name_zh": "天怒法师",
+      "card": "card/skywrath_mage.png",
+      "topbar": "topbar/skywrath_mage.png",
+      "minimap": [
+        "minimap/skywrath_mage_28.png",
+        "minimap/skywrath_mage_30.png",
+        "minimap/skywrath_mage_32.png"
+      ]
+    },
+    {
+      "id": 102,
+      "short": "abaddon",
+      "localized_name": "Abaddon",
+      "name_zh": "亚巴顿",
+      "card": "card/abaddon.png",
+      "topbar": "topbar/abaddon.png",
+      "minimap": [
+        "minimap/abaddon_28.png",
+        "minimap/abaddon_30.png",
+        "minimap/abaddon_32.png"
+      ]
+    },
+    {
+      "id": 103,
+      "short": "elder_titan",
+      "localized_name": "Elder Titan",
+      "name_zh": "上古巨神",
+      "card": "card/elder_titan.png",
+      "topbar": "topbar/elder_titan.png",
+      "minimap": [
+        "minimap/elder_titan_28.png",
+        "minimap/elder_titan_30.png",
+        "minimap/elder_titan_32.png"
+      ]
+    },
+    {
+      "id": 104,
+      "short": "legion_commander",
+      "localized_name": "Legion Commander",
+      "name_zh": "军团指挥官",
+      "card": "card/legion_commander.png",
+      "topbar": "topbar/legion_commander.png",
+      "minimap": [
+        "minimap/legion_commander_28.png",
+        "minimap/legion_commander_30.png",
+        "minimap/legion_commander_32.png"
+      ]
+    },
+    {
+      "id": 105,
+      "short": "techies",
+      "localized_name": "Techies",
+      "name_zh": "工程师",
+      "card": "card/techies.png",
+      "topbar": "topbar/techies.png",
+      "minimap": [
+        "minimap/techies_28.png",
+        "minimap/techies_30.png",
+        "minimap/techies_32.png"
+      ]
+    },
+    {
+      "id": 106,
+      "short": "ember_spirit",
+      "localized_name": "Ember Spirit",
+      "name_zh": "灰烬之灵",
+      "card": "card/ember_spirit.png",
+      "topbar": "topbar/ember_spirit.png",
+      "minimap": [
+        "minimap/ember_spirit_28.png",
+        "minimap/ember_spirit_30.png",
+        "minimap/ember_spirit_32.png"
+      ]
+    },
+    {
+      "id": 107,
+      "short": "earth_spirit",
+      "localized_name": "Earth Spirit",
+      "name_zh": "大地之灵",
+      "card": "card/earth_spirit.png",
+      "topbar": "topbar/earth_spirit.png",
+      "minimap": [
+        "minimap/earth_spirit_28.png",
+        "minimap/earth_spirit_30.png",
+        "minimap/earth_spirit_32.png"
+      ]
+    },
+    {
+      "id": 108,
+      "short": "abyssal_underlord",
+      "localized_name": "Underlord",
+      "name_zh": "孽主",
+      "card": "card/abyssal_underlord.png",
+      "topbar": "topbar/abyssal_underlord.png",
+      "minimap": [
+        "minimap/abyssal_underlord_28.png",
+        "minimap/abyssal_underlord_30.png",
+        "minimap/abyssal_underlord_32.png"
+      ]
+    },
+    {
+      "id": 109,
+      "short": "terrorblade",
+      "localized_name": "Terrorblade",
+      "name_zh": "恐怖利刃",
+      "card": "card/terrorblade.png",
+      "topbar": "topbar/terrorblade.png",
+      "minimap": [
+        "minimap/terrorblade_28.png",
+        "minimap/terrorblade_30.png",
+        "minimap/terrorblade_32.png"
+      ]
+    },
+    {
+      "id": 110,
+      "short": "phoenix",
+      "localized_name": "Phoenix",
+      "name_zh": "凤凰",
+      "card": "card/phoenix.png",
+      "topbar": "topbar/phoenix.png",
+      "minimap": [
+        "minimap/phoenix_28.png",
+        "minimap/phoenix_30.png",
+        "minimap/phoenix_32.png"
+      ]
+    },
+    {
+      "id": 111,
+      "short": "oracle",
+      "localized_name": "Oracle",
+      "name_zh": "神谕者",
+      "card": "card/oracle.png",
+      "topbar": "topbar/oracle.png",
+      "minimap": [
+        "minimap/oracle_28.png",
+        "minimap/oracle_30.png",
+        "minimap/oracle_32.png"
+      ]
+    },
+    {
+      "id": 112,
+      "short": "winter_wyvern",
+      "localized_name": "Winter Wyvern",
+      "name_zh": "寒冬飞龙",
+      "card": "card/winter_wyvern.png",
+      "topbar": "topbar/winter_wyvern.png",
+      "minimap": [
+        "minimap/winter_wyvern_28.png",
+        "minimap/winter_wyvern_30.png",
+        "minimap/winter_wyvern_32.png"
+      ]
+    },
+    {
+      "id": 113,
+      "short": "arc_warden",
+      "localized_name": "Arc Warden",
+      "name_zh": "天穹守望者",
+      "card": "card/arc_warden.png",
+      "topbar": "topbar/arc_warden.png",
+      "minimap": [
+        "minimap/arc_warden_28.png",
+        "minimap/arc_warden_30.png",
+        "minimap/arc_warden_32.png"
+      ]
+    },
+    {
+      "id": 114,
+      "short": "monkey_king",
+      "localized_name": "Monkey King",
+      "name_zh": "齐天大圣",
+      "card": "card/monkey_king.png",
+      "topbar": "topbar/monkey_king.png",
+      "minimap": [
+        "minimap/monkey_king_28.png",
+        "minimap/monkey_king_30.png",
+        "minimap/monkey_king_32.png"
+      ]
+    },
+    {
+      "id": 119,
+      "short": "dark_willow",
+      "localized_name": "Dark Willow",
+      "name_zh": "邪影芳灵",
+      "card": "card/dark_willow.png",
+      "topbar": "topbar/dark_willow.png",
+      "minimap": [
+        "minimap/dark_willow_28.png",
+        "minimap/dark_willow_30.png",
+        "minimap/dark_willow_32.png"
+      ]
+    },
+    {
+      "id": 120,
+      "short": "pangolier",
+      "localized_name": "Pangolier",
+      "name_zh": "石鳞剑士",
+      "card": "card/pangolier.png",
+      "topbar": "topbar/pangolier.png",
+      "minimap": [
+        "minimap/pangolier_28.png",
+        "minimap/pangolier_30.png",
+        "minimap/pangolier_32.png"
+      ]
+    },
+    {
+      "id": 121,
+      "short": "grimstroke",
+      "localized_name": "Grimstroke",
+      "name_zh": "天涯墨客",
+      "card": "card/grimstroke.png",
+      "topbar": "topbar/grimstroke.png",
+      "minimap": [
+        "minimap/grimstroke_28.png",
+        "minimap/grimstroke_30.png",
+        "minimap/grimstroke_32.png"
+      ]
+    },
+    {
+      "id": 123,
+      "short": "hoodwink",
+      "localized_name": "Hoodwink",
+      "name_zh": "森海飞霞",
+      "card": "card/hoodwink.png",
+      "topbar": "topbar/hoodwink.png",
+      "minimap": [
+        "minimap/hoodwink_28.png",
+        "minimap/hoodwink_30.png",
+        "minimap/hoodwink_32.png"
+      ]
+    },
+    {
+      "id": 126,
+      "short": "void_spirit",
+      "localized_name": "Void Spirit",
+      "name_zh": "虚无之灵",
+      "card": "card/void_spirit.png",
+      "topbar": "topbar/void_spirit.png",
+      "minimap": [
+        "minimap/void_spirit_28.png",
+        "minimap/void_spirit_30.png",
+        "minimap/void_spirit_32.png"
+      ]
+    },
+    {
+      "id": 128,
+      "short": "snapfire",
+      "localized_name": "Snapfire",
+      "name_zh": "电炎绝手",
+      "card": "card/snapfire.png",
+      "topbar": "topbar/snapfire.png",
+      "minimap": [
+        "minimap/snapfire_28.png",
+        "minimap/snapfire_30.png",
+        "minimap/snapfire_32.png"
+      ]
+    },
+    {
+      "id": 129,
+      "short": "mars",
+      "localized_name": "Mars",
+      "name_zh": "玛尔斯",
+      "card": "card/mars.png",
+      "topbar": "topbar/mars.png",
+      "minimap": [
+        "minimap/mars_28.png",
+        "minimap/mars_30.png",
+        "minimap/mars_32.png"
+      ]
+    },
+    {
+      "id": 131,
+      "short": "ringmaster",
+      "localized_name": "Ring Master",
+      "name_zh": "百戏大王",
+      "card": "card/ringmaster.png",
+      "topbar": "topbar/ringmaster.png",
+      "minimap": [
+        "minimap/ringmaster_28.png",
+        "minimap/ringmaster_30.png",
+        "minimap/ringmaster_32.png"
+      ]
+    },
+    {
+      "id": 135,
+      "short": "dawnbreaker",
+      "localized_name": "Dawnbreaker",
+      "name_zh": "破晓辰星",
+      "card": "card/dawnbreaker.png",
+      "topbar": "topbar/dawnbreaker.png",
+      "minimap": [
+        "minimap/dawnbreaker_28.png",
+        "minimap/dawnbreaker_30.png",
+        "minimap/dawnbreaker_32.png"
+      ]
+    },
+    {
+      "id": 136,
+      "short": "marci",
+      "localized_name": "Marci",
+      "name_zh": "玛西",
+      "card": "card/marci.png",
+      "topbar": "topbar/marci.png",
+      "minimap": [
+        "minimap/marci_28.png",
+        "minimap/marci_30.png",
+        "minimap/marci_32.png"
+      ]
+    },
+    {
+      "id": 137,
+      "short": "primal_beast",
+      "localized_name": "Primal Beast",
+      "name_zh": "獸",
+      "card": "card/primal_beast.png",
+      "topbar": "topbar/primal_beast.png",
+      "minimap": [
+        "minimap/primal_beast_28.png",
+        "minimap/primal_beast_30.png",
+        "minimap/primal_beast_32.png"
+      ]
+    },
+    {
+      "id": 138,
+      "short": "muerta",
+      "localized_name": "Muerta",
+      "name_zh": "琼英碧灵",
+      "card": "card/muerta.png",
+      "topbar": "topbar/muerta.png",
+      "minimap": [
+        "minimap/muerta_28.png",
+        "minimap/muerta_30.png",
+        "minimap/muerta_32.png"
+      ]
+    },
+    {
+      "id": 145,
+      "short": "kez",
+      "localized_name": "Kez",
+      "name_zh": "凯",
+      "card": "card/kez.png",
+      "topbar": "topbar/kez.png",
+      "minimap": [
+        "minimap/kez_28.png",
+        "minimap/kez_30.png",
+        "minimap/kez_32.png"
+      ]
+    },
+    {
+      "id": 155,
+      "short": "largo",
+      "localized_name": "Largo",
+      "name_zh": "朗戈",
+      "card": "card/largo.png",
+      "topbar": "topbar/largo.png",
+      "minimap": [
+        "minimap/largo_28.png",
+        "minimap/largo_30.png",
+        "minimap/largo_32.png"
+      ]
+    }
+  ]
+}

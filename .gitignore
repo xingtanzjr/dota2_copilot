@@ -1,0 +1,29 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Project artifacts
+config/minimap.json
+config/map_landmarks.json
+recordings/
+*.log
+
+# Hero asset cache (regenerable via `python scripts/fetch_assets.py`).
+# Currently checked in so the project works offline without re-fetching from
+# Valve's CDN. Uncomment the lines below to keep them out of git instead.
+# assets/card/
+# assets/topbar/
+# assets/minimap/

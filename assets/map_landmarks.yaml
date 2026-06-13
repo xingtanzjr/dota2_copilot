@@ -1,0 +1,98 @@
+# Dota 2 minimap landmarks — fixed map features used for masking & rules.
+#
+# Coordinates are normalized to [0, 1] within the calibrated minimap rectangle:
+#   (0, 0) = top-left of the minimap
+#   (1, 1) = bottom-right of the minimap
+#   x grows rightward (east), y grows downward (south).
+#
+# Map orientation:
+#   - Radiant base is in the south-west (bottom-left of the minimap).
+#   - Dire base is in the north-east (top-right of the minimap).
+#   - The river runs from north-west to south-east, diagonally.
+#
+# The values below are *approximate defaults* derived from the standard 7.x
+# map. Refine them for your HUD / resolution with:
+#
+#     dota2-copilot calibrate-landmarks --from-image <screenshot.png>
+#     dota2-copilot calibrate-landmarks            # uses live screen capture
+#
+# The tool writes the refined values to `config/map_landmarks.json`, which
+# takes precedence over this file at runtime.
+
+version: 1
+patch: "7.x"
+
+defaults:
+  # Default mask radius (fraction of minimap width) used when a landmark is
+  # painted onto an occlusion mask for hero detection.
+  mask_radius: 0.04
+
+landmarks:
+  # ---------------- Radiant buildings ----------------
+  radiant_fountain:        [0.060, 0.940]
+  radiant_ancient_top:     [0.100, 0.830]
+  radiant_ancient_bot:     [0.170, 0.870]
+  radiant_tower_top_t1:    [0.080, 0.400]
+  radiant_tower_top_t2:    [0.080, 0.550]
+  radiant_tower_top_t3:    [0.100, 0.680]
+  radiant_tower_top_t4_a:  [0.100, 0.790]
+  radiant_tower_top_t4_b:  [0.180, 0.830]
+  radiant_tower_mid_t1:    [0.380, 0.620]
+  radiant_tower_mid_t2:    [0.280, 0.720]
+  radiant_tower_mid_t3:    [0.200, 0.820]
+  radiant_tower_bot_t1:    [0.620, 0.920]
+  radiant_tower_bot_t2:    [0.480, 0.920]
+  radiant_tower_bot_t3:    [0.330, 0.920]
+  radiant_rax_top:         [0.090, 0.700]
+  radiant_rax_mid:         [0.190, 0.800]
+  radiant_rax_bot:         [0.320, 0.910]
+
+  # ---------------- Dire buildings ----------------
+  dire_fountain:           [0.940, 0.060]
+  dire_ancient_top:        [0.830, 0.130]
+  dire_ancient_bot:        [0.900, 0.170]
+  dire_tower_top_t1:       [0.380, 0.080]
+  dire_tower_top_t2:       [0.520, 0.080]
+  dire_tower_top_t3:       [0.670, 0.080]
+  dire_tower_top_t4_a:     [0.790, 0.100]
+  dire_tower_top_t4_b:     [0.830, 0.180]
+  dire_tower_mid_t1:       [0.620, 0.380]
+  dire_tower_mid_t2:       [0.720, 0.280]
+  dire_tower_mid_t3:       [0.800, 0.200]
+  dire_tower_bot_t1:       [0.920, 0.400]
+  dire_tower_bot_t2:       [0.920, 0.550]
+  dire_tower_bot_t3:       [0.900, 0.700]
+  dire_rax_top:            [0.680, 0.090]
+  dire_rax_mid:            [0.810, 0.190]
+  dire_rax_bot:            [0.910, 0.320]
+
+  # ---------------- River objectives ----------------
+  # Roshan rotates between two pits in 7.33+.
+  roshan_pit_top:          [0.320, 0.200]   # top river area, dire side of map
+  roshan_pit_bot:          [0.680, 0.800]   # bot river area, radiant side of map
+
+  # Power runes spawn at top and bot river pads.
+  rune_power_top:          [0.400, 0.400]
+  rune_power_bot:          [0.600, 0.600]
+
+  # ---------------- Bounty runes ----------------
+  rune_bounty_radiant_top: [0.220, 0.620]   # radiant top jungle
+  rune_bounty_radiant_bot: [0.500, 0.860]   # radiant bot jungle (near bot lane)
+  rune_bounty_dire_top:    [0.500, 0.140]   # dire top jungle (near top lane)
+  rune_bounty_dire_bot:    [0.780, 0.380]   # dire bot jungle
+
+  # ---------------- Wisdom runes (XP runes) ----------------
+  rune_wisdom_radiant:     [0.050, 0.620]   # radiant deep jungle
+  rune_wisdom_dire:        [0.950, 0.380]   # dire deep jungle
+
+  # ---------------- Outposts ----------------
+  outpost_radiant:         [0.330, 0.700]   # radiant secondary jungle
+  outpost_dire:            [0.670, 0.300]   # dire secondary jungle
+
+  # ---------------- Tormentors ----------------
+  tormentor_radiant:       [0.280, 0.470]   # radiant side near top river
+  tormentor_dire:          [0.720, 0.530]   # dire side near bot river
+
+  # ---------------- Lotus pools ----------------
+  lotus_pool_radiant:      [0.140, 0.490]
+  lotus_pool_dire:         [0.860, 0.510]

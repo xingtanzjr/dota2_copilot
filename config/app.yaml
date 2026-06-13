@@ -1,0 +1,82 @@
+# Default app configuration for Dota 2 Copilot.
+# Override by passing --config <path> or editing this file.
+
+capture:
+  # Sampling frequency in Hz. 1 Hz is the default; can be raised up to ~10.
+  fps: 1
+  # Sliding window length in seconds (passed to StateStore in later milestones).
+  history_seconds: 30
+  # Optional: save every captured minimap crop + detection to disk.
+  record:
+    enabled: false
+    out_dir: recordings
+
+decision:
+  # Backend: rule | llm | hybrid. Only "rule" is implemented in P1.
+  backend: rule
+
+notifier:
+  # Channels active in P1. TTS is wired but disabled by default.
+  channels:
+    console:
+      enabled: true
+      min_level: info
+    toast:
+      enabled: false   # only effective on Windows; flip to true once on the gaming box
+      min_level: info
+    tts:
+      enabled: false
+      min_level: warn
+
+minimap:
+  # ------------------------------------------------------------------
+  # Display mode of heroes on the minimap (configurable in Dota 2 settings).
+  #   icons  : hero portrait icons with team-colored border  (P1 default)
+  #   names  : Chinese hero names colored by team             (P2, TODO)
+  #   arrows : per-hero colored arrows, ally/enemy shape diff (P2, TODO)
+  # ------------------------------------------------------------------
+  display_mode: icons
+
+  # HSV color ranges (OpenCV convention: H ∈ [0,180], S/V ∈ [0,255]).
+  # Used for both "icons" and "names" modes; "arrows" mode is unique per hero
+  # and will not use these.
+  enemy_red:
+    h_ranges: [[0, 10], [170, 180]]
+    s_min: 150
+    v_min: 120
+  ally_green:
+    h_ranges: [[40, 85]]
+    s_min: 120
+    v_min: 120
+
+  # ------------------------------------------------------------------
+  # Parameters for display_mode == "icons" (see capture/minimap.py).
+  #
+  # Pipeline:
+  #   1. Build raw HSV mask (red / green pixels).
+  #   2. Morph-CLOSE with `fill_kernel` to fill the icon's border ring into
+  #      a solid square.
+  #   3. Find contours on the closed mask; keep those whose bounding box is
+  #      icon-sized and square-ish.
+  #   4. For each candidate, recompute fill ratio on the RAW mask:
+  #        - low  (< `building_raw_fill_max`)  → hero icon  (hollow border)
+  #        - high (≥ `building_raw_fill_max`)  → building   (solid block)
+  # ------------------------------------------------------------------
+  icons:
+    # Morph-close kernel (≈ border thickness) to fill the ring interior.
+    fill_kernel: 3
+    # Bounding-box area filter, pixels. At 2K an icon is ~28–36 px on a side
+    # (→ area ≈ 800–1300). Buildings are smaller (~18–22 px → ~320–480)
+    # so the lower bound also helps reject them, but the fill check below is
+    # the primary discriminator.
+    icon_area_min: 500
+    icon_area_max: 2500
+    # Square-ness filter: w/h must be within [1/aspect_tol, aspect_tol].
+    # Heavily overlapping icons may be rejected (acceptable for P1).
+    aspect_tol: 1.6
+    # Reject elongated noise: contour area / bbox area must be >= this.
+    min_fill_ratio: 0.45
+    # Buildings vs. heroes: a hero icon's interior is multi-colored, so the
+    # raw (pre-close) mask only contains the border ring → low fill.
+    # A tower/barracks is solid red/green → high fill.
+    building_raw_fill_max: 0.55
