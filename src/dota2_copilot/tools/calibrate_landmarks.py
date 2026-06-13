@@ -43,7 +43,7 @@ from ..config import (
 )
 
 
-WINDOW = "Dota 2 Copilot — Calibrate Landmarks"
+WINDOW = "Dota 2 Copilot - Calibrate Landmarks"
 
 # UI colors (BGR).
 _C_OTHER_SET = (90, 200, 90)     # green   — other landmarks already set

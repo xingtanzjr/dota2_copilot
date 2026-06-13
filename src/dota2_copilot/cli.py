@@ -26,11 +26,26 @@ def calibrate(
     out: Optional[Path] = typer.Option(
         None, "--out", "-o", help="Override output path for minimap.json."
     ),
+    from_image: Optional[Path] = typer.Option(
+        None,
+        "--from-image",
+        "-i",
+        help=(
+            "Calibrate from an image file instead of live capture. "
+            "Take a screenshot with Win+Shift+S, save it, then pass its path."
+        ),
+    ),
+    delay: int = typer.Option(
+        3,
+        "--delay",
+        "-d",
+        help="Seconds to wait before grabbing the screen (so you can Alt+Tab back to Dota).",
+    ),
 ) -> None:
     """Select the minimap screen region and save calibration."""
     from .tools.calibrate_minimap import run_calibration
 
-    run_calibration(out_path=out)
+    run_calibration(out_path=out, from_image=from_image, delay=delay)
 
 
 @app.command("calibrate-landmarks")
@@ -60,6 +75,11 @@ def calibrate_landmarks(
 @app.command()
 def preview(
     scale: float = typer.Option(2.0, "--scale", help="Display zoom factor."),
+    fps: Optional[float] = typer.Option(
+        5.0,
+        "--fps",
+        help="Override capture FPS for preview. Higher = smoother but more CPU.",
+    ),
     config: Optional[Path] = typer.Option(
         None, "--config", "-c", help="Path to app.yaml (defaults to repo config/app.yaml)."
     ),
@@ -69,7 +89,33 @@ def preview(
     from .tools.debug_preview import run_preview
 
     cfg = load_app_config(config) if config else None
-    run_preview(config=cfg, scale=scale)
+    run_preview(config=cfg, scale=scale, fps_override=fps)
+
+
+@app.command()
+def dump(
+    delay: int = typer.Option(
+        3, "--delay", "-d",
+        help="Seconds to wait before grabbing (Alt+Tab back to Dota in the meantime).",
+    ),
+    from_image: Optional[Path] = typer.Option(
+        None, "--from-image", "-i",
+        help="Read from a full-resolution screenshot instead of live capture.",
+    ),
+    config: Optional[Path] = typer.Option(
+        None, "--config", "-c", help="Path to app.yaml."
+    ),
+) -> None:
+    """Grab ONE frame, run detection, write a full debug bundle, then exit.
+
+    Use this instead of `preview` when you just want to dump a snapshot for
+    offline analysis (no OpenCV window focus needed).
+    """
+    from .config import load_app_config
+    from .tools.debug_preview import run_dump
+
+    cfg = load_app_config(config) if config else None
+    run_dump(config=cfg, delay=delay, from_image=from_image)
 
 
 @app.command()
