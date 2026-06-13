@@ -138,12 +138,15 @@ def run_preview(
             print(f"[preview] roster detection failed: {e}")
             print("[preview] falling back to full 127-hero matching.")
         else:
-            print("[preview] roster detected:")
+            from ..config import hero_zh
+
+            print("[preview] 检测到阵容：")
             for i, h in enumerate(roster.radiant):
-                print(f"  RADIANT #{i+1}  {h}")
+                print(f"  天辉 #{i+1}  {hero_zh(h)} ({h})")
             for i, h in enumerate(roster.dire):
-                print(f"  DIRE    #{i+1}  {h}")
-            print(f"[preview] my_team = {roster.my_team or '<unset, will use HSV>'}")
+                print(f"  夜魇 #{i+1}  {hero_zh(h)} ({h})")
+            team_zh = {"radiant": "天辉", "dire": "夜魇"}.get(roster.my_team or "", "未设置，将用 HSV 判断阵营")
+            print(f"[preview] 我方阵营 = {team_zh}")
             if my_team:
                 # Side known: pre-assign team labels, skip HSV ring sampling.
                 analyzer.set_roster(allies=roster.allies(), enemies=roster.enemies())

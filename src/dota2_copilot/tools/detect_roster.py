@@ -29,7 +29,7 @@ import cv2
 import numpy as np
 
 from ..capture.screen import open_grabber
-from ..config import DEFAULT_ROSTER_PATH, REPO_ROOT
+from ..config import DEFAULT_ROSTER_PATH, REPO_ROOT, hero_zh
 
 
 TOPBAR_DIR = REPO_ROOT / "assets" / "topbar"
@@ -233,9 +233,13 @@ def run_roster_detection(
 
     print(f"[roster] detected {len(roster.detections)} heroes in {elapsed:.1f}s\n")
     for i, d in enumerate(roster.detections):
-        side = "RADIANT" if i < 5 else "DIRE"
+        side = "天辉" if i < 5 else "夜魇"
         slot = (i % 5) + 1
-        print(f"  {side:7} #{slot}  {d['hero']:<22}  score={d['score']:.3f}  x={d['x']}")
+        zh = hero_zh(d["hero"])
+        print(
+            f"  {side} #{slot}  {zh:<6} ({d['hero']:<20}) "
+            f"score={d['score']:.3f}  x={d['x']}"
+        )
 
     if save_to_disk:
         out_path = out_path or DEFAULT_ROSTER_PATH

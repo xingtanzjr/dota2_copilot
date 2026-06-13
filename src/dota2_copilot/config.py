@@ -27,6 +27,45 @@ DEFAULT_MINIMAP_CONFIG = REPO_ROOT / "config" / "minimap.json"
 DEFAULT_LANDMARKS_TEMPLATE = REPO_ROOT / "assets" / "map_landmarks.yaml"
 DEFAULT_LANDMARKS_OVERRIDE = REPO_ROOT / "config" / "map_landmarks.json"
 DEFAULT_ROSTER_PATH = REPO_ROOT / "config" / "roster.json"
+HEROES_JSON = REPO_ROOT / "assets" / "heroes.json"
+
+
+# ---------------------------------------------------------------------------
+# Hero name lookup (short -> Chinese / English display names)
+# ---------------------------------------------------------------------------
+
+_HERO_NAMES_CACHE: dict[str, dict[str, str]] | None = None
+
+
+def _load_hero_names() -> dict[str, dict[str, str]]:
+    """Return {short: {"zh": ..., "en": ...}} from assets/heroes.json."""
+    global _HERO_NAMES_CACHE
+    if _HERO_NAMES_CACHE is not None:
+        return _HERO_NAMES_CACHE
+    out: dict[str, dict[str, str]] = {}
+    if HEROES_JSON.exists():
+        data = json.loads(HEROES_JSON.read_text(encoding="utf-8"))
+        for h in data.get("heroes", []):
+            short = h.get("short")
+            if not short:
+                continue
+            out[short] = {
+                "zh": h.get("name_zh") or h.get("localized_name") or short,
+                "en": h.get("localized_name") or short,
+            }
+    _HERO_NAMES_CACHE = out
+    return out
+
+
+def hero_zh(short: str) -> str:
+    """Chinese display name for a hero short id (falls back to short)."""
+    return _load_hero_names().get(short, {}).get("zh", short)
+
+
+def hero_label(short: str) -> str:
+    """`中文名 (short)` — useful when both are wanted in a single line."""
+    zh = hero_zh(short)
+    return f"{zh} ({short})" if zh != short else short
 
 
 # ---------------------------------------------------------------------------
