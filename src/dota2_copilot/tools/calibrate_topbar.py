@@ -82,18 +82,20 @@ def _select_rect_interactive(
         canvas = display_base.copy()
         if state["start"] is not None and state["end"] is not None:
             cv2.rectangle(canvas, state["start"], state["end"], (0, 255, 255), 2)
-        cv2.rectangle(canvas, (0, 0), (disp_w, bar_h), (30, 30, 30), -1)
+        # Instruction bar drawn at the BOTTOM so it never covers the top bar.
+        bar_y0 = max(0, disp_h - bar_h)
+        cv2.rectangle(canvas, (0, bar_y0), (disp_w, disp_h), (30, 30, 30), -1)
         cv2.putText(
             canvas, title,
-            (10, 22), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA,
+            (10, bar_y0 + 22), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA,
         )
         cv2.putText(
             canvas, subtitle,
-            (10, 42), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1, cv2.LINE_AA,
+            (10, bar_y0 + 42), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1, cv2.LINE_AA,
         )
         cv2.putText(
             canvas, "ENTER/SPACE: confirm   R: reset   ESC: abort",
-            (10, 62), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1, cv2.LINE_AA,
+            (10, bar_y0 + 62), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1, cv2.LINE_AA,
         )
         cv2.imshow(WINDOW, canvas)
         key = cv2.waitKey(20) & 0xFF
