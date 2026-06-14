@@ -69,6 +69,51 @@ def hero_label(short: str) -> str:
     return f"{zh} ({short})" if zh != short else short
 
 
+def resolve_hero_short(name: str) -> str | None:
+    """Resolve a user-supplied name to the canonical ``short`` id.
+
+    Accepts (case-insensitive, whitespace-trimmed):
+        * the short id itself, e.g. ``"pudge"``
+        * the English localized name, e.g. ``"Phantom Assassin"``
+        * the Simplified Chinese name, e.g. ``"幻影刺客"``
+        * the English name with spaces removed / replaced by ``_`` / ``-``
+
+    Returns ``None`` if no match is found.
+    """
+    if not name:
+        return None
+    key = name.strip()
+    if not key:
+        return None
+    table = _load_hero_names()
+
+    # 1) Exact short id (case-insensitive).
+    lower = key.lower()
+    if lower in table:
+        return lower
+
+    # 2) Exact zh / en match (case-insensitive for en).
+    for short, names in table.items():
+        if names.get("zh") == key:
+            return short
+        if names.get("en", "").lower() == lower:
+            return short
+
+    # 3) Normalized English match: "Phantom Assassin" / "phantom-assassin" /
+    #    "phantom_assassin" all collapse to "phantomassassin".
+    def _norm(s: str) -> str:
+        return "".join(ch for ch in s.lower() if ch.isalnum())
+
+    key_norm = _norm(key)
+    for short, names in table.items():
+        if _norm(short) == key_norm:
+            return short
+        if _norm(names.get("en", "")) == key_norm:
+            return short
+
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Pydantic models mirroring config/app.yaml
 # ---------------------------------------------------------------------------

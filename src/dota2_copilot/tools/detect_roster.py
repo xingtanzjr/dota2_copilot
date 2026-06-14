@@ -40,6 +40,13 @@ from ..types import ScreenRect
 
 
 TOPBAR_DIR = REPO_ROOT / "assets" / "topbar"
+TOPBAR_VARIANTS_DIR = REPO_ROOT / "assets" / "topbar_variants"
+
+# Variant filename format: "<short>__<label>.png" (double underscore).
+# E.g. "pudge__arcana.png", "antimage__persona_magus_apex.png".
+# These are loaded alongside the canonical templates and compete for the same
+# hero key, so the best-matching variant wins per detection.
+VARIANT_SEP = "__"
 
 # At 2560x1440 each top-bar hero portrait is roughly 70-110 px wide; at 1080p
 # closer to 55-85 px. Try the union so a single tool works at any resolution.
@@ -55,11 +62,19 @@ MIN_SLOT_DIST = 50
 
 
 def _load_topbar_templates() -> list[tuple[str, np.ndarray, np.ndarray | None]]:
+    """Load all topbar templates (defaults + user-provided variants).
+
+    Variant PNGs at ``assets/topbar_variants/<short>__<label>.png`` are mapped
+    back to ``<short>`` so they compete with the canonical portrait. This is
+    how Arcana / Persona / Immortal alt-portraits are supported -- run
+    ``dota2-copilot learn-topbar`` to add them.
+    """
     out: list[tuple[str, np.ndarray, np.ndarray | None]] = []
-    for p in sorted(TOPBAR_DIR.glob("*.png")):
-        img = cv2.imread(str(p), cv2.IMREAD_UNCHANGED)
+
+    def _add(path: Path, label: str) -> None:
+        img = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
         if img is None:
-            continue
+            return
         if img.ndim == 3 and img.shape[2] == 4:
             bgr = img[:, :, :3]
             alpha = img[:, :, 3]
@@ -69,7 +84,17 @@ def _load_topbar_templates() -> list[tuple[str, np.ndarray, np.ndarray | None]]:
         else:
             bgr = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
             alpha = None
-        out.append((p.stem, bgr, alpha))
+        out.append((label, bgr, alpha))
+
+    for p in sorted(TOPBAR_DIR.glob("*.png")):
+        _add(p, p.stem)
+
+    if TOPBAR_VARIANTS_DIR.exists():
+        for p in sorted(TOPBAR_VARIANTS_DIR.glob("*.png")):
+            # Strip the "__<label>" suffix to recover the base hero short.
+            short = p.stem.split(VARIANT_SEP, 1)[0]
+            _add(p, short)
+
     return out
 
 

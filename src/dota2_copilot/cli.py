@@ -198,6 +198,68 @@ def roster(
     run_roster_detection(delay=delay, from_image=from_image, out_path=out, my_team=my_team)
 
 
+@app.command("learn-topbar")
+def learn_topbar(
+    assignments: list[str] = typer.Argument(
+        ...,
+        help=(
+            "One or more 'slot=hero' pairs, e.g. R3=pudge or R3=小小. "
+            "Slots: R1..R5 (Radiant), D1..D5 (Dire). "
+            "Hero accepts Chinese name, English name, or short id."
+        ),
+    ),
+    from_image: Optional[Path] = typer.Option(
+        None, "--from-image", "-i",
+        help="Read from a full screenshot instead of live capture (recommended).",
+    ),
+    delay: int = typer.Option(
+        5, "--delay", "-d",
+        help="Countdown seconds before live screen capture (if --from-image is omitted).",
+    ),
+    label: str = typer.Option(
+        "variant", "--label", "-l",
+        help="Variant tag stored in the filename, e.g. 'arcana', 'persona_toy_butcher'.",
+    ),
+    force: bool = typer.Option(
+        False, "--force", "-f",
+        help="Overwrite existing variant files with the same name.",
+    ),
+) -> None:
+    """Teach the detector new topbar portraits (Arcana / Persona / Immortal alts).
+
+    Requires a saved top-bar calibration (run `calibrate-topbar` first). Each
+    side's calibrated rect is split into 5 equal slots; for every slot you
+    label, the tool crops that region and saves it to
+    `assets/topbar_variants/<hero>__<label>.png`. The roster detector
+    automatically uses these variants alongside the canonical portraits.
+
+    Hero names accept Chinese (敌法师 / 幻影刺客), English (Anti-Mage),
+    or the canonical short id (antimage).
+
+    Examples
+    --------
+        # Pudge with the Feast of Abscession arcana at Radiant #3,
+        # PA with Manifold Paradox at Dire #1:
+        dota2-copilot learn-topbar R3=pudge D1=phantom_assassin \\
+            --from-image game.png --label arcana
+
+        # 用中文也可以：
+        dota2-copilot learn-topbar R3=小小 D1=幻影刺客 \\
+            --from-image game.png --label arcana
+    """
+    from .tools.learn_topbar import run_learn_topbar
+
+    n = run_learn_topbar(
+        assignments=assignments,
+        from_image=from_image,
+        delay=delay,
+        label=label,
+        force=force,
+    )
+    if n == 0:
+        raise typer.Exit(code=1)
+
+
 @app.command()
 def record(
     duration: Optional[float] = typer.Option(
