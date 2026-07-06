@@ -96,6 +96,15 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
 
+    # Windows spawns DataLoader workers as fresh processes; they cannot share the
+    # main process's in-RAM image cache, which deadlocks at the first epoch. Force
+    # single-process loading in that combo (RAM-cached small images stay fast).
+    import platform
+    if platform.system() == "Windows" and args.cache == "ram" and args.workers != 0:
+        print(f"[train_yolo] Windows + cache='ram': forcing --workers 0 "
+              f"(was {args.workers}) to avoid a DataLoader spawn deadlock.")
+        args.workers = 0
+
     data_root = args.data.resolve()
     if not (data_root / "images" / "train").is_dir():
         raise SystemExit(
