@@ -1,4 +1,4 @@
-"""Train the YOLO minimap hero detector (254 classes = 127 heroes x 2 teams).
+r"""Train the YOLO minimap hero detector (254 classes = 127 heroes x 2 teams).
 
 This is a thin, reproducible wrapper around Ultralytics YOLOv8. It is meant to
 be run **on the Windows GPU machine** after copying the whole project there
