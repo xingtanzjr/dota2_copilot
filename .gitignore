@@ -21,6 +21,16 @@ config/map_landmarks.json
 recordings/
 *.log
 
+# Synthetic YOLO dataset (regenerable, ~1.6GB) -- DO NOT commit.
+# Recreate deterministically on any machine with:
+#   python scripts/gen_synth_dataset.py --train 8000 --val 800 --seed 1
+datasets/
+
+# Training runs, exported weights and the synth-only venv (all regenerable/large)
+runs/
+models/
+.venv-synth/
+
 # Hero asset cache (regenerable via `python scripts/fetch_assets.py`).
 # Currently checked in so the project works offline without re-fetching from
 # Valve's CDN. Uncomment the lines below to keep them out of git instead.

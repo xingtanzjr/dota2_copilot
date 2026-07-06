@@ -26,6 +26,11 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.4",
 ]
+# YOLO minimap detector (training + inference). Installs torch via ultralytics;
+# on a CUDA GPU install the matching torch build first (see scripts/train_yolo.py).
+yolo = [
+    "ultralytics>=8.2",
+]
 
 [project.scripts]
 dota2-copilot = "dota2_copilot.cli:app"
