@@ -31,12 +31,14 @@ notifier:
 minimap:
   # ------------------------------------------------------------------
   # Display mode of heroes on the minimap.
-  #   icons_template : portrait template matching (P1 DEFAULT, recommended)
+  #   yolo           : trained YOLOv8 detector, identity + team in one shot
+  #                    (RECOMMENDED once models/minimap_yolo.pt exists)
+  #   icons_template : portrait template matching (previous default)
   #   icons          : HSV color blob on team-colored border (fallback)
   #   names          : Chinese hero names colored by team    (P2, TODO)
   #   arrows         : per-hero colored arrows                (P2, TODO)
   # ------------------------------------------------------------------
-  display_mode: icons_template
+  display_mode: yolo
 
   # HSV color ranges (OpenCV convention: H ∈ [0,180], S/V ∈ [0,255]).
   # Used for both "icons" and "names" modes; "arrows" mode is unique per hero
@@ -99,3 +101,20 @@ minimap:
     team_s_min: 70
     team_v_min: 70
     team_min_pixels: 6             # below this in BOTH colors → team=unknown
+
+  # ------------------------------------------------------------------
+  # Parameters for display_mode == "yolo".
+  # A trained YOLOv8 model predicts 254 classes = 127 heroes x {ally, enemy}
+  # (see src/dota2_copilot/training/classes.py), so each box decodes straight
+  # to a hero short id AND its player-perspective team. Requires the optional
+  # `yolo` extra: pip install -e ".[yolo]"  (ultralytics + torch).
+  # ------------------------------------------------------------------
+  yolo:
+    weights: models/minimap_yolo.pt   # repo-relative or absolute path to the .pt
+    conf: 0.25                        # min confidence to keep a detection
+    iou: 0.5                          # NMS IoU threshold
+    imgsz: 640                        # inference image size (match training)
+    device: ""                       # "" auto | "cpu" | "0" for cuda:0
+    max_det: 30                       # cap detections per frame (10 heroes + slack)
+    half: false                       # fp16 inference (CUDA only)
+

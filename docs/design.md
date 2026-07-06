@@ -141,6 +141,15 @@ class MapKB:
 
 > P1 阶段：只识别**敌方红点数量与位置**就足够驱动 A1/A2/A3。具体是谁可以先不知道。
 
+**Stage 3 — YOLOv8 端到端检测（推荐，已实现 `display_mode: yolo`）**
+- 训练一个 254 类检测器：127 英雄 × {ally, enemy}，一次前向同时给出**身份 + 阵营 + 位置**。
+  - 类别方案见 `src/dota2_copilot/training/classes.py`：`class_id = hero_index*2 + team_bit`（0=ally 绿, 1=enemy 红），名字形如 `pudge__ally` / `pudge__enemy`。
+  - 阵营是**玩家视角色**（自己队=绿=ally，无论天辉/夜魇），由头像边缘的柔和弧光颜色编码（蓝=友, 红=敌），与位置解耦。
+- **数据：合成优先**。`training/synth.py` 把英雄头像 + 队色弧光合成到真实干净小地图底图上，自动产出 YOLO 标注；`scripts/gen_synth_dataset.py` 生成 `datasets/minimap_yolo/`（train/val + data.yaml）。
+- **训练**：`scripts/train_yolo.py`（Ultralytics YOLOv8s）→ `models/minimap_yolo.pt`。在 RTX 2070S 上早停于 ~69 epoch，`mAP50≈0.98 / mAP50-95≈0.98`。
+- **推理**：`capture/yolo_detect.py::YoloMinimapDetector` 惰性加载 ultralytics，把每个框 `decode_class` 成 `(hero_short, team)` → `HeroBlob`；可选 `set_roster()` 只保留本局所选英雄。
+- 依赖为可选 extra：`pip install -e ".[yolo]"`（ultralytics + torch）。仅在 `display_mode: yolo` 时才 import。
+
 #### 3.1.4 兵线识别（P2，先占位）
 - 兵线在小地图上是**密集的细小红/绿点群**（小兵图标）
 - 思路：在颜色分割后，识别"密集小点集群"而非"单个大点"

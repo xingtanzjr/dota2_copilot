@@ -178,12 +178,31 @@ class TemplateDetectConfig(BaseModel):
     # tools/detect_roster.py), not from config. It's an in-memory optimization.
 
 
+class YoloDetectConfig(BaseModel):
+    """Parameters for the trained YOLOv8 minimap detector (``display_mode == "yolo"``).
+
+    The model predicts 254 classes = 127 heroes x {ally, enemy} (see
+    ``training/classes.py``), so each detection decodes straight to a hero
+    short id AND its player-perspective team — no template match or HSV
+    team-ring sampling is required.
+    """
+
+    weights: str = "models/minimap_yolo.pt"   # path (repo-relative or absolute)
+    conf: float = 0.25                          # min confidence to keep a box
+    iou: float = 0.5                            # NMS IoU threshold
+    imgsz: int = 640                            # inference image size
+    device: str = ""                           # "" auto, "cpu", or "0" for cuda:0
+    max_det: int = 30                           # cap detections per frame
+    half: bool = False                          # fp16 inference (CUDA only)
+
+
 class MinimapDetectConfig(BaseModel):
-    display_mode: Literal["icons", "icons_template", "names", "arrows"] = "icons_template"
+    display_mode: Literal["icons", "icons_template", "names", "arrows", "yolo"] = "yolo"
     enemy_red: ColorRangeConfig
     ally_green: ColorRangeConfig
     icons: IconsDetectConfig = Field(default_factory=IconsDetectConfig)
     template: TemplateDetectConfig = Field(default_factory=TemplateDetectConfig)
+    yolo: YoloDetectConfig = Field(default_factory=YoloDetectConfig)
 
 
 class AppConfig(BaseModel):

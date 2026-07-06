@@ -301,6 +301,8 @@ class MinimapAnalyzer:
         self._roster: set[str] | None = None
         # hero short -> Team.ALLY | Team.ENEMY (skip HSV ring sampling when known)
         self._team_by_hero: dict[str, Team] = {}
+        # Lazily constructed YOLO detector (display_mode == "yolo").
+        self._yolo = None
 
     # ------------------------------------------------------------------
     # Runtime roster injection
@@ -328,6 +330,9 @@ class MinimapAnalyzer:
             }
         # Force template reload on next detect() call.
         self._templates = None
+        # Propagate roster to the YOLO detector if it's already been built.
+        if self._yolo is not None:
+            self._yolo.set_roster(self._roster)
 
     # ------------------------------------------------------------------
     # Core API
@@ -344,6 +349,8 @@ class MinimapAnalyzer:
             raise ValueError(f"Expected BGR image, got shape {minimap_bgr.shape}")
 
         mode = self.cfg.display_mode
+        if mode == "yolo":
+            return self._detect_via_yolo(minimap_bgr)
         if mode == "icons_template":
             return self._detect_via_templates(minimap_bgr)
         if mode == "icons":
@@ -359,6 +366,20 @@ class MinimapAnalyzer:
                 "and is scheduled for P2. Switch to 'icons' for now."
             )
         raise ValueError(f"Unknown display_mode: {mode!r}")
+
+    # ------------------------------------------------------------------
+    # display_mode == "yolo"  (trained YOLOv8, identity + team in one shot)
+    # ------------------------------------------------------------------
+
+    def _ensure_yolo(self):
+        if self._yolo is None:
+            from .yolo_detect import YoloMinimapDetector  # lazy: pulls ultralytics
+
+            self._yolo = YoloMinimapDetector(self.cfg.yolo, roster=self._roster)
+        return self._yolo
+
+    def _detect_via_yolo(self, minimap_bgr: np.ndarray) -> tuple[list[HeroBlob], list[HeroBlob]]:
+        return self._ensure_yolo().detect(minimap_bgr)
 
     # ------------------------------------------------------------------
     # display_mode == "icons"  (HSV color blob detection)
