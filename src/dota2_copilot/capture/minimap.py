@@ -330,9 +330,9 @@ class MinimapAnalyzer:
             }
         # Force template reload on next detect() call.
         self._templates = None
-        # Propagate roster to the YOLO detector if it's already been built.
+        # Propagate roster + fixed sides to the YOLO detector if already built.
         if self._yolo is not None:
-            self._yolo.set_roster(self._roster)
+            self._yolo.set_roster(self._roster, self._team_by_hero)
 
     # ------------------------------------------------------------------
     # Core API
@@ -375,7 +375,11 @@ class MinimapAnalyzer:
         if self._yolo is None:
             from .yolo_detect import YoloMinimapDetector  # lazy: pulls ultralytics
 
-            self._yolo = YoloMinimapDetector(self.cfg.yolo, roster=self._roster)
+            self._yolo = YoloMinimapDetector(
+                self.cfg.yolo,
+                roster=self._roster,
+                team_by_hero=self._team_by_hero,
+            )
         return self._yolo
 
     def _detect_via_yolo(self, minimap_bgr: np.ndarray) -> tuple[list[HeroBlob], list[HeroBlob]]:

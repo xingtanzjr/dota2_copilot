@@ -13,6 +13,7 @@ without those heavy dependencies installed.
 
 from __future__ import annotations
 
+from collections import Counter, deque
 from pathlib import Path
 
 import numpy as np
@@ -23,22 +24,73 @@ from ..types import HeroBlob, Point, Team
 
 
 class YoloMinimapDetector:
-    """Lazy-loaded YOLOv8 detector returning ``(enemies, allies)`` HeroBlobs."""
+    """Lazy-loaded YOLOv8 detector returning ``(enemies, allies)`` HeroBlobs.
 
-    def __init__(self, cfg: YoloDetectConfig, roster: set[str] | None = None) -> None:
+    Team stability
+    --------------
+    The 254-class head (hero x team) shares almost identical portrait features
+    between a hero's ally/enemy flavours, so the raw per-frame team bit can
+    flicker. Two mechanisms stabilise it:
+
+    * **Roster override** — when the match roster (and our side) is known,
+      ``team_by_hero`` maps every drafted hero to a fixed side; we trust that
+      and ignore the predicted bit entirely (zero flicker).
+    * **Temporal majority vote** — otherwise we keep the last
+      ``cfg.team_vote_window`` predicted teams per ``hero_id`` and emit the
+      majority, smoothing isolated frame-to-frame flips.
+    """
+
+    def __init__(
+        self,
+        cfg: YoloDetectConfig,
+        roster: set[str] | None = None,
+        team_by_hero: dict[str, Team] | None = None,
+    ) -> None:
         self.cfg = cfg
         self._model = None
         self._shorts = load_hero_shorts()
         # Optional restriction to the picked heroes (short ids). None = keep all.
         self._roster: set[str] | None = set(roster) if roster else None
+        # hero short -> fixed Team (from roster + known side). Overrides prediction.
+        self._team_by_hero: dict[str, Team] = dict(team_by_hero) if team_by_hero else {}
+        # Per-hero recent predicted-team history for majority voting.
+        self._vote_window = max(1, int(getattr(cfg, "team_vote_window", 1)))
+        self._team_history: dict[str, deque] = {}
 
     # ------------------------------------------------------------------
     # Roster injection
     # ------------------------------------------------------------------
 
-    def set_roster(self, roster: set[str] | None) -> None:
-        """Restrict kept detections to ``roster`` heroes (``None`` = keep all)."""
+    def set_roster(
+        self,
+        roster: set[str] | None,
+        team_by_hero: dict[str, Team] | None = None,
+    ) -> None:
+        """Restrict kept detections to ``roster`` heroes and set fixed sides.
+
+        ``team_by_hero`` (hero short -> Team) makes team deterministic; pass
+        ``None``/empty to fall back to per-frame prediction + temporal voting.
+        """
         self._roster = set(roster) if roster else None
+        self._team_by_hero = dict(team_by_hero) if team_by_hero else {}
+        self._team_history.clear()
+
+    # ------------------------------------------------------------------
+    # Team resolution
+    # ------------------------------------------------------------------
+
+    def _stable_team(self, hero: str, predicted: Team) -> Team:
+        # 1) Deterministic side from the known roster.
+        known = self._team_by_hero.get(hero)
+        if known is not None and known != Team.UNKNOWN:
+            return known
+        # 2) Temporal majority vote over recent predictions.
+        if self._vote_window <= 1:
+            return predicted
+        hist = self._team_history.setdefault(hero, deque(maxlen=self._vote_window))
+        hist.append(predicted)
+        return Counter(hist).most_common(1)[0][0]
+
 
     # ------------------------------------------------------------------
     # Model loading
@@ -99,7 +151,8 @@ class YoloMinimapDetector:
             short, team_str = decode_class(int(cid), self._shorts)
             if self._roster is not None and short not in self._roster:
                 continue
-            team = Team.ALLY if team_str == "ally" else Team.ENEMY
+            predicted = Team.ALLY if team_str == "ally" else Team.ENEMY
+            team = self._stable_team(short, predicted)
             bx, by = int(round(x1)), int(round(y1))
             bw, bh = int(round(x2 - x1)), int(round(y2 - y1))
             cx = int(round((x1 + x2) / 2))

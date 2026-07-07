@@ -117,4 +117,10 @@ minimap:
     device: ""                       # "" auto | "cpu" | "0" for cuda:0
     max_det: 30                       # cap detections per frame (10 heroes + slack)
     half: false                       # fp16 inference (CUDA only)
+    # Team (ally/enemy) stabilisation. The 254-class head can flicker between a
+    # hero's ally/enemy flavour frame-to-frame. When the roster + your side are
+    # known (run `preview` WITHOUT --no-detect-roster, plus --my-team), team is
+    # looked up deterministically and this vote is bypassed. Otherwise the last
+    # N predicted teams per hero are majority-voted (1 = disable voting).
+    team_vote_window: 7
 

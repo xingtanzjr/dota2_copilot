@@ -194,6 +194,8 @@ class YoloDetectConfig(BaseModel):
     device: str = ""                           # "" auto, "cpu", or "0" for cuda:0
     max_det: int = 30                           # cap detections per frame
     half: bool = False                          # fp16 inference (CUDA only)
+    team_vote_window: int = 7                   # temporal majority vote length for team
+                                                # (1 = off; ignored when roster side is known)
 
 
 class MinimapDetectConfig(BaseModel):
